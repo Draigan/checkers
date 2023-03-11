@@ -1,9 +1,8 @@
 import './App.css';
 import { useState, useEffect } from 'react';
 import io from 'socket.io-client'
-const socket = io.connect("http://localhost:3001");
+const socket = io.connect("18.217.142.174:8080");
 
-let number = 123
 function App() {
   const [state, setState] = useState("124124");
   const [message, setMessage] = useState("");
