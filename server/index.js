@@ -7,6 +7,10 @@ app.use(cors());
 
 const server = http.createServer(app);
 
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + 'checkers/client/build/index.html');
+});
+
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
