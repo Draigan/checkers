@@ -3,6 +3,7 @@ const http = require('http')
 const Server = require("socket.io").Server
 const app = express()
 const path = require('path')
+const port = 8080;
 
 const server = http.createServer(app)
 const io = new Server(server, {
@@ -10,7 +11,6 @@ const io = new Server(server, {
     origin: "*"
   }
 })
-
 
 const _dirname = path.dirname("")
 const buildPath = path.join(_dirname, "../client/build");
@@ -38,6 +38,6 @@ io.on("connection", (socket) => {
   })
 })
 
-server.listen(8080, () => {
-  console.log("SERVER IS RUNNING")
-})
+server.listen(port, () => {
+  console.log("SERVER IS LISTENING ON PORT", port)
+});
