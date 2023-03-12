@@ -1,22 +1,34 @@
-const express = require("express");
-const app = express();
-const http = require("http");
-const { Server } = require("socket.io");
-const cors = require("cors");
-app.use(cors());
+const express = require('express')
+const http = require('http')
+const Server = require("socket.io").Server
+const app = express()
+const path = require('path')
 
-const server = http.createServer(app);
-
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + 'checkers/client/build/index.html');
-});
-
+const server = http.createServer(app)
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"]
+    origin: "*"
   }
-});
+})
+
+
+const _dirname = path.dirname("")
+const buildPath = path.join(_dirname, "../client/build");
+
+app.use(express.static(buildPath))
+
+app.get("/*", function(req, res) {
+
+  res.sendFile(
+    path.join(__dirname, "../client/build/index.html"),
+    function(err) {
+      if (err) {
+        res.status(500).send(err);
+      }
+    }
+  );
+
+})
 
 io.on("connection", (socket) => {
   console.log("user connected", socket.id);
