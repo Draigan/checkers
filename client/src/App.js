@@ -1,12 +1,18 @@
-import './App.css';
-import { useState, useEffect } from 'react';
+import './css/board.css';
+import { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client'
-const socket = io.connect("18.217.142.174:8080");
+import Board from "./Board";
+const socket = io.connect("localhost:4000");
 
 function App() {
-  const [state, setState] = useState("124124");
+  const [turn, setTurn] = useState("white");
   const [message, setMessage] = useState("");
-  // setState({ hey: "123", bye: "345" });
+  const firstRender = useRef(true);
+  const grid = useRef();
+  let fen = "0101010110101010010101010000000000000000303030300303030330303030";
+
+
+
   function sendMessage() {
     socket.emit("send_message", message);
   }
@@ -17,16 +23,12 @@ function App() {
     }, [socket])
   });
 
+
   return (
-    <div className="App">
-      <input placeholder="message..."
-        onChange={(e) => {
-          setMessage(e.target.value)
-        }}
-      />
-      <button onClick={sendMessage}> Send Message </button>
-    </div>
-  );
+    <>
+      <Board fen={fen} />
+    </>
+  )
 }
 
 export default App;
