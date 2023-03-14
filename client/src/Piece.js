@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-function Piece({ square, setBoard, board }) {
+function Piece({ grid, updateGrid, square, setBoard, board, setCurrentSquare }) {
   const [pieceType, setPieceType] = useState(square.pieceType);
   // Has this piece been clicked
   const [clicked, setClicked] = useState(false);
@@ -8,28 +8,33 @@ function Piece({ square, setBoard, board }) {
   const [clickedStyle, setClickedStyle] = useState();
   // Position of the piece
   const [position, setPosition] = useState();
+
   useEffect(() => {
     setPosition(square.position);
     setPieceType(square.pieceType);
-  }, [])
+  }, [board])
 
   function checkPossible() {
     let y = position[0];
     let x = position[1];
-    if (board[y - 1][x - 1].pieceType == "") {
-      console.log("FREE SPACE")
+    let up = y - 1;
+    let down = y + 1;
+    let left = x - 1;
+    let right = x + 1;
+    if (board[up][left].pieceType == "") {
+      updateGrid(up, left);
+    }
+    if (board[up][right].pieceType == "") {
+      console.log("FREE SPACE right")
     }
 
 
   };
   function click() {
-    console.log(square)
-    setBoard(Math.random());
-
     if (!clicked) {
+      setCurrentSquare(square);
       setClickedStyle("-border");
       setClicked(true);
-      console.log(position);
       checkPossible();
     } else {
       setClickedStyle("");

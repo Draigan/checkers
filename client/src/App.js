@@ -11,8 +11,6 @@ function App() {
   const grid = useRef();
   let fen = "0101010110101010010101010000000000000000303030300303030330303030";
 
-
-
   function sendMessage() {
     socket.emit("send_message", message);
   }
