@@ -34,12 +34,13 @@ function joinTable(socket, user, table, id) {
   user.table = table;
   tableMap[table].players.push(user.name);
   console.log(user.name, "Joined", table, "id:", id);
-  console.log("Table One:", tableMap[table].players)
+  console.log(table, tableMap[table].players)
   console.log("user status:", user)
+  logRoom();
 }
 
 function leaveTable(socket, user) {
-  socket.leave(tableMap[user.table]);
+  socket.leave(user.table);
   // Set the the tables players list to a new arrray without the player in it
   tableMap[user.table].players = tableMap[user.table].players.filter((player) => player != user.name);
 
@@ -48,7 +49,23 @@ function leaveTable(socket, user) {
   user.table = null;
   user.tableID = null;
   console.log("user status:", user)
+  logRoom();
 
+}
+async function logRoom() {
+  let one = await io.in(`table_one`).fetchSockets()
+  let two = await io.in(`table_two`).fetchSockets()
+  let three = await io.in(`table_three`).fetchSockets()
+  let four = await io.in(`table_four`).fetchSockets()
+  // let test = await io.fetchSockets();
+  console.log("ROOM ONE:")
+  one.forEach((user) => console.log(user.id))
+  console.log("ROOM TWO:")
+  two.forEach((user) => console.log(user.id))
+  console.log("ROOM THREE:")
+  three.forEach((user) => console.log(user.id))
+  console.log("ROOM FOUR:")
+  four.forEach((user) => console.log(user.id))
 }
 
 
