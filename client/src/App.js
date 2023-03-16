@@ -1,30 +1,36 @@
 import './css/board.css';
-import { useState, useEffect, useRef } from 'react';
+import { Link, Routes, Route } from 'react-router-dom';
+// import { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client'
-import Board from "./Board";
-const socket = io.connect("localhost:4000");
+import Game from "./components/game/Game";
+import Table from "./components/game/Game";
+import Home from "./components/Home";
+import Login from "./components/Login";
+import { useEffect, useState } from 'react';
+const socket = io.connect("localhost:4001");
 
 function App() {
-  const [turn, setTurn] = useState("white");
-  const [message, setMessage] = useState("");
-  const firstRender = useRef(true);
-  const grid = useRef();
-  let fen = "0101010110101010010101010000000000000000303030300303030330303030";
+  // const [message, setMessage] = useState();
+  // useEffect(() => {
+  //   socket.on("recieve_message", (data) => {
+  //     console.log(data)
+  //   }, [socket])
+  // });
 
-  function sendMessage() {
-    socket.emit("send_message", message);
+  function test() {
+    console.log("TEST EMIT")
+    socket.emit("test");
+
   }
-
-  useEffect(() => {
-    socket.on("recieve_message", (data) => {
-      console.log(data)
-    }, [socket])
-  });
-
 
   return (
     <>
-      <Board fen={fen} />
+      <button onClick={test}>EMIT</button>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/home" element={<Home socket={socket} />} />
+        <Route path="/table" element={<Table socket={socket} />} />
+      </Routes>
     </>
   )
 }
