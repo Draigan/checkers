@@ -1,18 +1,28 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-function ChatBody({ socket }) {
+function ChatBody({ socket, messages }) {
 
-  useEffect(() => {
-    socket.on('chat_recieve_message', (data) => {
-      console.log(data)
-    })
+  // useEffect(() => {
+  //   socket.on('chat_recieve_message', (data) => {
+  //     console.log(data)
+  //   })
 
-  }, [socket]);
+  // }, [socket]);
 
   return (
     <>
       Chat
       <div className="chat--body">
+        <ul>
+          {messages.map((message, index) => {
+            return (
+              <li key={index} >
+                {message}
+              </li>
+            );
+          })
+          }
+        </ul>
       </div>
     </>
 

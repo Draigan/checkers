@@ -1,17 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 
-function Login() {
-  const [userName, setUserName] = useState();
+function Login({ socket }) {
+  const [loginUser, setLoginUser] = useState();
   const navigate = useNavigate();
 
   function handleSubmit(e) {
     e.preventDefault();
-    localStorage.setItem('userName', userName);
-    console.log(localStorage)
+    socket.emit("user_login", loginUser);
     navigate('/home')
-
-
   }
   return (
     <div className="field">
@@ -22,7 +19,7 @@ function Login() {
         name="username"
         id="username"
         className="username--input"
-        onChange={(e) => setUserName(e.target.value)}
+        onChange={(e) => setLoginUser(e.target.value)}
       />
       <button onClick={handleSubmit} type="submit">Submit</button>
     </div>
