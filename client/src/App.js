@@ -2,14 +2,14 @@ import { Link, Routes, Route } from 'react-router-dom';
 // import { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client'
 import Game from "./components/game/Game";
-import Table from "./components/Table";
-import Home from "./components/Home";
-import Login from "./components/Login";
+import Table from "./components/pages/Table";
+import Home from "./components/pages/Home";
+import Login from "./components/pages/Login";
 import { useEffect, useState } from 'react';
 const socket = io.connect("localhost:4001");
 
 function App() {
-  // const [message, setMessage] = useState();
+  const [globalUserName, setGlobalUserName] = useState("anon");
   // useEffect(() => {
   //   socket.on("recieve_message", (data) => {
   //     console.log(data)
@@ -26,9 +26,13 @@ function App() {
     <>
       <button onClick={test}>EMIT</button>
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/home" element={<Home socket={socket} />} />
-        <Route path="/table" element={<Table socket={socket} />} />
+        <Route path="/" element={<Login socket={socket} />} />
+        <Route path="/home" element={
+          <Home
+            globalUserName={globalUserName}
+            setGlobalUserName={setGlobalUserName}
+            socket={socket} />} />
+        <Route path="/table/:id" element={<Table globalUserName={globalUserName} socket={socket} />} />
       </Routes>
     </>
   )
