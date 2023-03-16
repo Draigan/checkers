@@ -1,7 +1,19 @@
-function ChatBody() {
+import { useEffect } from 'react';
+
+function ChatBody({ socket }) {
+
+  useEffect(() => {
+    socket.on('chat_recieve_message', (data) => {
+      console.log(data)
+    })
+
+  }, [socket]);
+
   return (
     <>
-      CHATBODY
+      Chat
+      <div className="chat--body">
+      </div>
     </>
 
   );

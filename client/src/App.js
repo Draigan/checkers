@@ -1,9 +1,8 @@
-import './css/board.css';
 import { Link, Routes, Route } from 'react-router-dom';
 // import { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client'
 import Game from "./components/game/Game";
-import Table from "./components/game/Game";
+import Table from "./components/Table";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import { useEffect, useState } from 'react';

@@ -3,9 +3,13 @@ import Chat from './chat/Chat'
 function Table({ socket }) {
   return (
     <>
-      <Game socket={socket} />
-      <Chat />
+      <h1>WELCOME TO TABLE</h1>
+      <div className="table">
+        <Chat socket={socket} />
+        <Game socket={socket} />
+      </div>
     </>
-  );
+  )
+
 }
 export default Table;

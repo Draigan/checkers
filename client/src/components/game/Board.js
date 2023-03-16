@@ -89,7 +89,7 @@ function Board({ tmp }) {
 
           </div>
         )
-      }))};
+      }))}
     </div>
 
 

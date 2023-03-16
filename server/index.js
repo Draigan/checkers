@@ -18,10 +18,17 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('🔥: A user disconnected');
   });
+
   socket.on('test', () => {
     console.log("EMIT TEST FROM SERVER");
     io.to("room_one").emit("recieve_message");
   })
+
+  // Recieve A Message from client
+  socket.on('chat_send_message', (data) => {
+    io.emit("chat_recieve_message", data);
+  })
+
   socket.on('table_one', () => {
     console.log(socket.id, "Joined Table One");
     socket.join("room_one");

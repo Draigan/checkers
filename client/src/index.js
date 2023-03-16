@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import './css/board.css';
+import './css/index.css';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
