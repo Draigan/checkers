@@ -16,15 +16,9 @@ function App() {
   //   }, [socket])
   // });
 
-  function test() {
-    console.log("TEST EMIT")
-    socket.emit("test");
-
-  }
 
   return (
     <>
-      <button onClick={test}>EMIT</button>
       <Routes>
         <Route path="/" element={<Login socket={socket} />} />
         <Route path="/home" element={

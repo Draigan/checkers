@@ -11,7 +11,6 @@ function ChatBody({ socket, messages }) {
 
   return (
     <>
-      Chat
       <div className="chat--body">
         <ul>
           {messages.map((message, index) => {

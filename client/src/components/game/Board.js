@@ -1,10 +1,24 @@
 import { useRef, useEffect, useState } from 'react'
 import Square from "./Square";
+import useFetch from '../../hooks/useFetch'
 
-function Board({ tmp }) {
-  const [fen, setFen] = useState("0101010110101010010101010000000000000000303030400303030330303030");
+function Board({ tmp, socket }) {
+  const [fen, setFen] = useState("");
   const grid = useRef(tmp);
   const [clicked, setClicked] = useState(false);
+  const [flip, setFlip] = useState("");
+  const { data } = useFetch('http://localhost:4001/api');
+
+  // RECIEVE SIGNAL FROM SOCKET
+  // CONTACT API
+  // SET FEN TO API DATA
+  // RERENDER BOARD
+  socket.on("recieve_fen", () => {
+    data && setFen(data);
+
+  })
+
+
 
   function clickSquare(position) {
     let y = position[0];
@@ -20,6 +34,20 @@ function Board({ tmp }) {
       setClicked(false);
     }
   }
+  function onMove() {
+    // setFen("0102010120102020010101010000000000000000403030404444444444303030")
+    socket.emit("request_fen", writeFen());
+  }
+
+  // Align the board so the current player is always at the bottom
+  socket.emit("request_flip");
+  useEffect(() => {
+    socket.on("recieve_flip", () => {
+      console.log("FLIPPED")
+      setFlip("-flip");
+    })
+
+  }, [socket])
 
 
 
@@ -39,6 +67,9 @@ function Board({ tmp }) {
         if (fen[count] == "4") {
           grid.current[i][j].pieceType = "whiteking";
         }
+        if (fen[count] == "0") {
+          grid.current[i][j].pieceType = "";
+        }
         count++;
       }
     }
@@ -48,38 +79,33 @@ function Board({ tmp }) {
     // console.log("CHANGEGRID")
   }
   readFen();
-  // function writeFen() {
-  //   let tmp = "";
-  //   for (let i = 0; i < 8; i++) {
-  //     for (let j = 0; j < 8; j++) {
-  //       if (grid.current[i][j].pieceType == "red") {
-  //         tmp += "1";
-  //       }
-  //       if (grid.current[i][j].pieceType == "redking") {
-  //         tmp += "2";
-  //       }
-  //       if (grid.current[i][j].pieceType == "white") {
-  //         tmp += "3";
-  //       }
-  //       if (grid.current[i][j].pieceType == "whiteking") {
-  //         tmp += "4";
-  //       }
-  //       if (grid.current[i][j].pieceType == "") {
-  //         tmp += "0";
-  //       }
-  //     }
-  //   }
-  //   return tmp;
-  // }
-  useEffect(() => {
-
-    console.log("Grid Changed");
-
-  }, [grid])
+  function writeFen() {
+    let tmp = "";
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        if (grid.current[i][j].pieceType == "red") {
+          tmp += "1";
+        }
+        if (grid.current[i][j].pieceType == "redking") {
+          tmp += "2";
+        }
+        if (grid.current[i][j].pieceType == "white") {
+          tmp += "3";
+        }
+        if (grid.current[i][j].pieceType == "whiteking") {
+          tmp += "4";
+        }
+        if (grid.current[i][j].pieceType == "") {
+          tmp += "0";
+        }
+      }
+    }
+    return tmp;
+  }
 
 
   return (
-    <div className="board" >
+    <div className={`board ${flip}`} >
       {grid.current.map((row) => row.map((square) => {
         return (
           <div key={square.id} onClick={() => { clickSquare(square.position); }}
@@ -89,8 +115,9 @@ function Board({ tmp }) {
 
           </div>
         )
-      }))}
-    </div>
+      }))};
+      <button onClick={() => onMove()}>testFen</button>
+    </div >
 
 
   );

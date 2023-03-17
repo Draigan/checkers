@@ -34,4 +34,7 @@
 .-highlight {
   background-color: purple; }
 
+.-flip {
+  transform: rotate(180deg); }
+
 /*# sourceMappingURL=board.css.map */

@@ -2,12 +2,16 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 
 function Login({ socket }) {
-  const [loginUser, setLoginUser] = useState();
+  const [loginUser, setLoginUser] = useState(``);
   const navigate = useNavigate();
 
   function handleSubmit(e) {
     e.preventDefault();
-    socket.emit("user_login", loginUser);
+    if (loginUser == "") {
+      socket.emit("user_login", `anon#${Math.floor(Math.random() * 100000)}`);
+    } else {
+      socket.emit("user_login", loginUser);
+    }
     navigate('/home')
   }
   return (

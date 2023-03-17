@@ -11,6 +11,7 @@ function Game({ socket }) {
 
   }, [socket]);
 
+  // Initial board state
   let tmp = [];
   for (let i = 0; i < 8; i++) {
     tmp[i] = [];
@@ -52,6 +53,7 @@ function Game({ socket }) {
     <Board tmp={tmp}
       turn={turn}
       setTurn={setTurn}
+      socket={socket}
     />
 
   );
