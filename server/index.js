@@ -1,5 +1,6 @@
 const Table = require('./table.js');
 
+// Initialize the server
 const express = require('express');
 const app = express();
 const PORT = 4001;
@@ -17,47 +18,73 @@ http.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
 
+// Make some tables
 const tableOne = new Table("table_one", 1);
 const tableTwo = new Table("table_two", 2);
 const tableThree = new Table("table_three", 3);
 const tableFour = new Table("table_four", 4);
 
+// This is for when all we know is the table name and we want the class instance 
 const tableMap = {
   "table_one": tableOne,
   "table_two": tableTwo,
   "table_three": tableThree,
   "table_four": tableFour,
 }
+
+// const tableStatus = {
+//   table_one: tableOne.a
+// }
+
+app.get('/api', (req, res) => {
+  res.send("0102010120102020010101010000000000000000403030404444444444303030");
+})
+
 function joinTable(socket, user, table, id) {
+  if (tableMap[table].players?.includes(user.name)) return;
+  // Seat the user at the table
+  tableMap[table].players[0]
+  if (tableMap[table].players.length == 0) {
+    user.playerColor = "white";
+  } else {
+    user.playerColor = "red";
+  }
   socket.join(table);
+  sendTableStatus();
   user.tableID = id;
   user.table = table;
   tableMap[table].players.push(user.name);
+  // Assign them a color
   console.log(user.name, "Joined", table, "id:", id);
   console.log(table, tableMap[table].players)
   console.log("user status:", user)
-  logRoom();
+  logRooms();
 }
 
 function leaveTable(socket, user) {
+  if (user.table == null) return;
   socket.leave(user.table);
+  sendTableStatus();
   // Set the the tables players list to a new arrray without the player in it
   tableMap[user.table].players = tableMap[user.table].players.filter((player) => player != user.name);
 
+  // Log the values we need before we set them to null
   console.log(user.name, "left table", user.table, "id:", user.tableID)
   console.log(user.table, tableMap[user.table].players)
   user.table = null;
   user.tableID = null;
+  user.playerColor = null;
   console.log("user status:", user)
-  logRoom();
+  logRooms();
 
 }
-async function logRoom() {
+
+async function logRooms() {
+  // These are socket rooms, fetchSockets returns an array of sockets in the room
   let one = await io.in(`table_one`).fetchSockets()
   let two = await io.in(`table_two`).fetchSockets()
   let three = await io.in(`table_three`).fetchSockets()
   let four = await io.in(`table_four`).fetchSockets()
-  // let test = await io.fetchSockets();
   console.log("ROOM ONE:")
   one.forEach((user) => console.log(user.id))
   console.log("ROOM TWO:")
@@ -69,43 +96,55 @@ async function logRoom() {
 }
 
 
-
-
-
-
-
-
+setInterval(sendTableStatus, 100)
+function sendTableStatus() {
+  io.emit("recieve_table_status", {
+    table_one: tableOne.players.length,
+    table_two: tableTwo.players.length,
+    table_three: tableThree.players.length,
+    table_four: tableFour.players.length,
+  });
+}
 
 io.on('connection', (socket) => {
   let user = {
-    name: "anon",
+    // name: `Anon#${Math.floor(Math.random() * 10000)}`,
+    name: null,
     tableID: null,
     table: null,
+    playerColor: null,
   }
   console.log(`⚡: ${socket.id} user just connected!`);
   socket.on('disconnect', () => {
     console.log('🔥: A user disconnected');
+    leaveTable(socket, user)
   });
-
   socket.on("user_login", (data) => {
     console.log("User just logged in", data)
     user.name = data;
   })
   socket.on('request_username', () => {
-    socket.emit('response_username', user.name)
+    socket.emit('recieve_username', user.name)
   })
-  socket.on("leave_table", () => {
+  socket.on("request_leave_table", () => {
     if (user.table) {
       leaveTable(socket, user);
     }
-
   })
-
-
-  socket.on('test', () => {
-    console.log("EMIT TEST FROM SERVER");
-    io.to("room_one").emit("recieve_message");
+  socket.on("request_fen", (data) => {
+    let table = tableMap[user.table];
+    io.to(user.table).emit("recieve_fen", data)
+    // table.fen = data;
+    console.log(data)
   })
+  // Here we flip the board so the current player is always at the bottom
+  socket.on('request_flip', () => {
+    // Check to see if the player is number 2
+    if (user.playerColor == "red") {
+      socket.emit('recieve_flip')
+    }
+  });
+
 
   // Recieve A Message from client
   socket.on('chat_send_message', (data) => {
