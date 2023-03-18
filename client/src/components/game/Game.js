@@ -1,59 +1,148 @@
 import { useState, useEffect, useRef } from 'react';
 import Board from "./Board";
+import initBoard from './helpers/initBoard.js'
 
 function Game({ socket }) {
+  const [fen, setFen] = useState("0101010110101010010101010000000000000000303030300303030330303030");
   const [turn, setTurn] = useState("white");
-
+  const [clickedState, setClickedState] = useState(false);
+  const [playerColor, setPlayerColor] = useState(null);
+  const [squareStart, setSquareStart] = useState();
+  // grid is a 2x2 array of objects, each representing one squares details
+  // pieceType: null, red redking white whiteking
+  // id: `${i}${j}`,
+  // pieceImage: null,
+  // position: [i, j],
+  // possible: false,
+  // squareColor: null,
+  // cssStyle: null,
+  // highlight: ""
+  const tmp = initBoard();
+  const grid = useRef(tmp);
   useEffect(() => {
-    socket.on("recieve_message", () => {
-      console.log("recieved a message in room 1");
-    });
+    setFen(writeFen())
+    console.log(writeFen)
 
-  }, [socket]);
+  }, [grid.current])
 
-  // Initial board state
-  let tmp = [];
-  for (let i = 0; i < 8; i++) {
-    tmp[i] = [];
-    for (let j = 0; j < 8; j++) {
-      // Create board objects
-      tmp[i][j] = {
-        pieceType: null,
-        id: `${i}${j}`,
-        pieceImage: null,
-        position: [i, j],
-        possible: false,
-        squareColor: null,
-        cssStyle: null,
-        highlight: ""
-      };
-      // Set board colors
-      setBoardColors(i, j);
+
+  function clickSquare(position) {
+    //HANDLE MOVE TO SQUARE
+    let y = position[0];
+    let x = position[1];
+    let current = grid.current[y][x];
+    console.log("current:", current)
+
+    if (clickedState && current.possible) {
+      console.log("MAGIC")
+      console.log(current.pieceType)
+      console.log("startSquare.pieceType", squareStart.pieceType)
+      current.pieceType = squareStart.pieceType;
+      console.log(current.pieceType)
+      console.log("square41:", grid.current[4][1])
+      setClickedState(false);
+      return;
     }
-  };
-  function setBoardColors(i, j) {
-    if (j % 2 == 0) {
-      tmp[i][j].cssStyle = "square-black";
-      tmp[i][j].squareColor = "black";
-    } else {
-      tmp[i][j].cssStyle = "square-white";
-      tmp[i][j].squareColor = "white";
-    }
-    if (j % 2 == 0 && i % 2 == 0) {
-      tmp[i][j].cssStyle = "square-white";
-      tmp[i][j].squareColor = "white";
-    }
-    if (j % 2 != 0 && i % 2 == 0) {
-      tmp[i][j].cssStyle = "square-black";
-      tmp[i][j].squareColor = "black";
+
+    setClickedState(true)
+    checkPossibleMoves(y, x);
+    setSquareStart(current);
+    // if (!clicked) {
+    //   setClicked(true);
+    //   grid.current[y][x].highlight = "-highlight";
+    //   changeGrid(4, 4);
+    //   console.log("HEY");
+    // } else {
+    //   grid.current[y][x].highlight = "";
+    //   setClicked(false);
+    // }
+  }
+
+  function checkPossibleMoves(y, x) {
+    let upLeft = grid.current[y - 1][x - 1];
+    // let upLeft = y - 1;
+    // let downLeft = x - 1;
+    if (upLeft.pieceType == null) {
+      upLeft.possible = true;
     }
   }
+
+
+  function readFen() {
+    let count = 0;
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        if (fen[count] == "1") {
+          grid.current[i][j].pieceType = "red";
+        }
+        if (fen[count] == "2") {
+          grid.current[i][j].pieceType = "redking";
+        }
+        if (fen[count] == "3") {
+          grid.current[i][j].pieceType = "white";
+        }
+        if (fen[count] == "4") {
+          grid.current[i][j].pieceType = "whiteking";
+        }
+        if (fen[count] == "0") {
+          grid.current[i][j].pieceType = null;
+        }
+        count++;
+      }
+    }
+  }
+  function writeFen() {
+    let tmp = "";
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        if (grid.current[i][j].pieceType == "red") {
+          tmp += "1";
+        }
+        if (grid.current[i][j].pieceType == "redking") {
+          tmp += "2";
+        }
+        if (grid.current[i][j].pieceType == "white") {
+          tmp += "3";
+        }
+        if (grid.current[i][j].pieceType == "whiteking") {
+          tmp += "4";
+        }
+        if (grid.current[i][j].pieceType == null) {
+          tmp += "0";
+        }
+      }
+    }
+    return tmp;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   return (
 
-    <Board tmp={tmp}
+    <Board grid={grid}
       turn={turn}
       setTurn={setTurn}
       socket={socket}
+      clickSquare={clickSquare}
+      fen={fen}
+      setFen={setFen}
+      readFen={readFen}
+      writeFen={writeFen}
     />
 
   );

@@ -24,6 +24,19 @@ const tableTwo = new Table("table_two", 2);
 const tableThree = new Table("table_three", 3);
 const tableFour = new Table("table_four", 4);
 
+// Add users to this array
+let users = [];
+
+class User {
+  constructor() {
+    this.name = Math.floor(Math.random() * 1000);
+    this.tableID = null;
+    this.table = null;
+    this.playerColor = null;
+  }
+
+}
+
 // This is for when all we know is the table name and we want the class instance 
 const tableMap = {
   "table_one": tableOne,
@@ -32,9 +45,6 @@ const tableMap = {
   "table_four": tableFour,
 }
 
-// const tableStatus = {
-//   table_one: tableOne.a
-// }
 
 app.get('/api', (req, res) => {
   res.send("0102010120102020010101010000000000000000403030404444444444303030");
@@ -43,14 +53,16 @@ app.get('/api', (req, res) => {
 function joinTable(socket, user, table, id) {
   if (tableMap[table].players?.includes(user.name)) return;
   // Seat the user at the table
-  tableMap[table].players[0]
-  if (tableMap[table].players.length == 0) {
-    user.playerColor = "white";
-  } else {
+  let otherPlayer = users.find((user) => user.table == table)?.playerColor;
+  if (otherPlayer && users.find((user) => user.table == table).playerColor == "white") {
     user.playerColor = "red";
+  } else {
+    user.playerColor = "white";
   }
+
   socket.join(table);
   sendTableStatus();
+  console.log("the following user is at this table", users.find((user) => user.table == table));
   user.tableID = id;
   user.table = table;
   tableMap[table].players.push(user.name);
@@ -58,6 +70,7 @@ function joinTable(socket, user, table, id) {
   console.log(user.name, "Joined", table, "id:", id);
   console.log(table, tableMap[table].players)
   console.log("user status:", user)
+  console.log("users", users)
   logRooms();
 }
 
@@ -106,18 +119,17 @@ function sendTableStatus() {
   });
 }
 
+
 io.on('connection', (socket) => {
-  let user = {
-    // name: `Anon#${Math.floor(Math.random() * 10000)}`,
-    name: null,
-    tableID: null,
-    table: null,
-    playerColor: null,
-  }
+  let user = new User();
+  users.push(user);
   console.log(`⚡: ${socket.id} user just connected!`);
+  console.log(users.map((item) => item.name));
   socket.on('disconnect', () => {
     console.log('🔥: A user disconnected');
+    users = users.filter((item) => user.name != item.name)
     leaveTable(socket, user)
+    console.log(users);
   });
   socket.on("user_login", (data) => {
     console.log("User just logged in", data)
