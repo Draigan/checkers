@@ -19,11 +19,20 @@ function Game({ socket }) {
   // highlight: ""
   const tmp = initBoard();
   const grid = useRef(tmp);
-  useEffect(() => {
-    setFen(writeFen())
-    console.log(writeFen)
 
-  }, [grid.current])
+  // CHANGE GRID
+  // SEND NEW DATA TO SERVER
+  // SERVER UPDATES API
+  // SERVER BROADCASTS ALL IN TABLE TO UPDATE DATA
+  // CLIENTS UPDATE DATA
+
+  // useEffect(() => {
+  //   setFen(writeFen())
+  //   socket.emit("")
+  //   // console.log(writeFen)
+  //   socket.emit("request_fen", writeFen());
+
+  // }, [grid.current])
 
 
   function clickSquare(position) {
@@ -39,29 +48,20 @@ function Game({ socket }) {
       console.log("startSquare.pieceType", squareStart.pieceType)
       current.pieceType = squareStart.pieceType;
       console.log(current.pieceType)
-      console.log("square41:", grid.current[4][1])
-      setClickedState(false);
+      setClickedState(false)
+      socket.emit("request_fen", writeFen());
+      setFen(writeFen());
+      setSquareStart(null);
       return;
     }
 
     setClickedState(true)
     checkPossibleMoves(y, x);
     setSquareStart(current);
-    // if (!clicked) {
-    //   setClicked(true);
-    //   grid.current[y][x].highlight = "-highlight";
-    //   changeGrid(4, 4);
-    //   console.log("HEY");
-    // } else {
-    //   grid.current[y][x].highlight = "";
-    //   setClicked(false);
-    // }
   }
 
   function checkPossibleMoves(y, x) {
     let upLeft = grid.current[y - 1][x - 1];
-    // let upLeft = y - 1;
-    // let downLeft = x - 1;
     if (upLeft.pieceType == null) {
       upLeft.possible = true;
     }

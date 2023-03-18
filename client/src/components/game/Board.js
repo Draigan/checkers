@@ -12,6 +12,7 @@ function Board({ grid, socket, clickSquare, fen, setFen, readFen, writeFen }) {
   // SET FEN TO API DATA
   // RERENDER BOARD
   socket.on("recieve_fen", () => {
+    console.log("recieved")
     data && setFen(data);
   })
 

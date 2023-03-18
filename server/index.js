@@ -18,6 +18,7 @@ http.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
 
+const startPosition = "0101010110101010010101010000000000000000303030300303030330303030";
 // Make some tables
 const tableOne = new Table("table_one", 1);
 const tableTwo = new Table("table_two", 2);
@@ -47,7 +48,7 @@ const tableMap = {
 
 
 app.get('/api', (req, res) => {
-  res.send("0102010120102020010101010000000000000000403030404444444444303030");
+  res.send(tableOne.fen);
 })
 
 function joinTable(socket, user, table, id) {
@@ -73,6 +74,10 @@ function joinTable(socket, user, table, id) {
   console.log("users", users)
   logRooms();
 }
+function resetTable(table) {
+  table.fen = startPosition;
+
+}
 
 function leaveTable(socket, user) {
   if (user.table == null) return;
@@ -80,7 +85,6 @@ function leaveTable(socket, user) {
   sendTableStatus();
   // Set the the tables players list to a new arrray without the player in it
   tableMap[user.table].players = tableMap[user.table].players.filter((player) => player != user.name);
-
   // Log the values we need before we set them to null
   console.log(user.name, "left table", user.table, "id:", user.tableID)
   console.log(user.table, tableMap[user.table].players)
@@ -144,10 +148,13 @@ io.on('connection', (socket) => {
     }
   })
   socket.on("request_fen", (data) => {
-    let table = tableMap[user.table];
-    io.to(user.table).emit("recieve_fen", data)
+    // let table = tableMap[user.table];
     // table.fen = data;
-    console.log(data)
+    // console.log(table.fen)
+    tableOne.fen = data;
+    console.log(tableOne.fen)
+    io.to(user.table).emit("recieve_fen");
+    // console.log(data)
   })
   // Here we flip the board so the current player is always at the bottom
   socket.on('request_flip', () => {
