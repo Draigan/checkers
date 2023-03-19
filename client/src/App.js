@@ -9,6 +9,11 @@ import { useEffect, useState } from 'react';
 const socket = io.connect("localhost:4001");
 
 function App() {
+  // Prevent reloa d
+  // window.addEventListener("beforeunload", (event) => {
+  //   event.preventDefault();
+  //   return event.returnValue = "DONT LEAVE"
+  // });
   const [globalUserName, setGlobalUserName] = useState("anon");
   // useEffect(() => {
   //   socket.on("recieve_message", (data) => {

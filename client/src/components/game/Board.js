@@ -5,31 +5,26 @@ import useFetch from '../../hooks/useFetch'
 function Board({ grid, socket, clickSquare, fen, setFen, readFen, writeFen }) {
 
   const [flip, setFlip] = useState("");
-  const { data } = useFetch('http://localhost:4001/api');
 
-  // RECIEVE SIGNAL FROM SOCKET
-  // CONTACT API
-  // SET FEN TO API DATA
-  // RERENDER BOARD
-  socket.on("recieve_fen", () => {
-    console.log("recieved")
+  socket.on("recieve_fen", (data) => {
     data && setFen(data);
+    // console.log(data)
+    // console.log("fen", fen);
   })
 
   function onMove() {
-    // setFen("0102010120102020010101010000000000000000403030404444444444303030")
     socket.emit("request_fen", writeFen());
   }
 
   // Align the board so the current player is always at the bottom
   socket.emit("request_flip");
-  useEffect(() => {
-    socket.on("recieve_flip", () => {
-      console.log("FLIPPED")
-      setFlip("-flip");
-    })
+  // useEffect(() => {
+  socket.on("recieve_flip", () => {
+    // console.log("FLIPPED")
+    setFlip("-flip");
+  })
 
-  }, [socket])
+  // }, [socket])
 
 
 
@@ -49,7 +44,6 @@ function Board({ grid, socket, clickSquare, fen, setFen, readFen, writeFen }) {
           </div>
         )
       }))};
-      <button onClick={() => onMove()}>testFen</button>
     </div >
 
 

@@ -18,15 +18,13 @@ http.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
 
-const startPosition = "0101010110101010010101010000000000000000303030300303030330303030";
+const startPosition = "0101010000101010010000011000100003030000300000300003030300303030";
 // Make some tables
 const tableOne = new Table("table_one", 1);
 const tableTwo = new Table("table_two", 2);
 const tableThree = new Table("table_three", 3);
 const tableFour = new Table("table_four", 4);
 
-// Add users to this array
-let users = [];
 
 class User {
   constructor() {
@@ -35,8 +33,8 @@ class User {
     this.table = null;
     this.playerColor = null;
   }
-
 }
+let users = [];
 
 // This is for when all we know is the table name and we want the class instance 
 const tableMap = {
@@ -47,9 +45,6 @@ const tableMap = {
 }
 
 
-app.get('/api', (req, res) => {
-  res.send(tableOne.fen);
-})
 
 function joinTable(socket, user, table, id) {
   if (tableMap[table].players?.includes(user.name)) return;
@@ -62,20 +57,29 @@ function joinTable(socket, user, table, id) {
   }
 
   socket.join(table);
+  resetTable(tableMap[table], socket);
   sendTableStatus();
-  console.log("the following user is at this table", users.find((user) => user.table == table));
+  // console.log("the following user is at this table", users.find((user) => user.table == table));
   user.tableID = id;
   user.table = table;
   tableMap[table].players.push(user.name);
   // Assign them a color
-  console.log(user.name, "Joined", table, "id:", id);
-  console.log(table, tableMap[table].players)
-  console.log("user status:", user)
-  console.log("users", users)
-  logRooms();
+  // console.log(user.name, "Joined", table, "id:", id);
+  // console.log(table, tableMap[table].players)
+  // console.log("user status:", user)
+  // console.log("users", users)
+  socket.emit("recieve_player_color", user.playerColor)
+  socket.emit("recieve_table_color", "white");
+  // console.log("player playColor", user.playerColor)
+  // console.log("table turnColor", table.turnColor)
+  // logRooms();
 }
-function resetTable(table) {
+function resetTable(table, socket) {
   table.fen = startPosition;
+  table.turnColor = "white";
+  // console.log("table.fen", table.fen)
+  io.to(table.name).emit("recieve_fen", startPosition);
+  io.to(table.name).emit("recieve_table_color", "white");
 
 }
 
@@ -86,13 +90,13 @@ function leaveTable(socket, user) {
   // Set the the tables players list to a new arrray without the player in it
   tableMap[user.table].players = tableMap[user.table].players.filter((player) => player != user.name);
   // Log the values we need before we set them to null
-  console.log(user.name, "left table", user.table, "id:", user.tableID)
-  console.log(user.table, tableMap[user.table].players)
+  // console.log(user.name, "left table", user.table, "id:", user.tableID)
+  // console.log(user.table, tableMap[user.table].players)
   user.table = null;
   user.tableID = null;
   user.playerColor = null;
-  console.log("user status:", user)
-  logRooms();
+  // console.log("user status:", user)
+  // logRooms();
 
 }
 
@@ -113,7 +117,6 @@ async function logRooms() {
 }
 
 
-setInterval(sendTableStatus, 100)
 function sendTableStatus() {
   io.emit("recieve_table_status", {
     table_one: tableOne.players.length,
@@ -123,8 +126,17 @@ function sendTableStatus() {
   });
 }
 
+function changeTableColor(table) {
+  if (table.turnColor == "white") {
+    table.turnColor = "red";
+  } else {
+    table.turnColor = "white";
+  }
+
+}
 
 io.on('connection', (socket) => {
+
   let user = new User();
   users.push(user);
   console.log(`⚡: ${socket.id} user just connected!`);
@@ -147,15 +159,18 @@ io.on('connection', (socket) => {
       leaveTable(socket, user);
     }
   })
+
+  // This is basically a change of turn
   socket.on("request_fen", (data) => {
-    // let table = tableMap[user.table];
-    // table.fen = data;
-    // console.log(table.fen)
-    tableOne.fen = data;
-    console.log(tableOne.fen)
-    io.to(user.table).emit("recieve_fen");
-    // console.log(data)
+    let table = tableMap[user.table];
+    console.log(user)
+    console.log(table)
+    table.fen = data;
+    changeTableColor(table);
+    io.to(user.table).emit("recieve_fen", table.fen);
+    io.to(user.table).emit("recieve_table_color", table.turnColor);
   })
+
   // Here we flip the board so the current player is always at the bottom
   socket.on('request_flip', () => {
     // Check to see if the player is number 2
@@ -172,6 +187,7 @@ io.on('connection', (socket) => {
 
   socket.on('join_table', (table, id) => {
     joinTable(socket, user, table, id);
+    socket.emit("recieve_player_color", user.playerColor)
   })
 });
 

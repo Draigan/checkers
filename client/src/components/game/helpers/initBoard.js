@@ -7,6 +7,7 @@ export function initBoard() {
       // Create board objects
       tmp[i][j] = {
         pieceType: null,
+        pieceColor: null,
         id: `${i}${j}`,
         pieceImage: null,
         position: [i, j],

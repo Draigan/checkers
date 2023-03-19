@@ -1,7 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react';
-import useFetch from '../../hooks/useFetch'
 function Home({ socket, globalUserName, setGlobalUserName }) {
   const [tablesStatus, setTablesStatus] = useState({
     table_one: 0,
@@ -10,7 +9,6 @@ function Home({ socket, globalUserName, setGlobalUserName }) {
     table_four: 0
   });
   const navigate = useNavigate();
-  const { data, loading, error } = useFetch('http://localhost:4001/api');
   useEffect(() => {
     socket.emit('request_username');
     socket.on('recieve_username', (data) => {
@@ -36,7 +34,6 @@ function Home({ socket, globalUserName, setGlobalUserName }) {
 
   return (
     <>
-      {data && data}
       <ul>
         <h1> WELCOME TO CHECKERS {globalUserName}  CHOOSE A GAME ROOM</h1>
         <li><button onClick={() => {

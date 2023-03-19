@@ -1,4 +1,5 @@
 .chat {
+  height: 31rem;
   background: grey;
   width: 24%;
   display: flex;
