@@ -8,7 +8,7 @@ import Board from "./Board";
 import initBoard from './helpers/initBoard.js'
 
 function Game({ socket }) {
-  const [fen, setFen] = useState("0101010110101010010101010000000000000000303030300303030330303030");
+  const [fen, setFen] = useState("");
   const [turn, setTurn] = useState("white");
   const [clickedState, setClickedState] = useState(false);
   const [playerColor, setPlayerColor] = useState(null);
@@ -80,6 +80,7 @@ function Game({ socket }) {
 
       removePiece(squareStart);
       socket.emit("request_fen", writeFen());
+      socket.emit("request_change_turn")
       setSquareStart(null);
       resetHighlightPossible();
       return;
@@ -123,7 +124,8 @@ function Game({ socket }) {
     if (upLeft.pieceColor == playerColor) return;
     // Has Opponets Piece
     if (upLeft.pieceColor != playerColor) {
-      checkSquaresRecursive(upLeft, "upLeft");
+      recursiveTwo(upLeft, null);
+      // checkSquaresRecursive(upLeft, "upLeft");
     }
 
   }
@@ -140,13 +142,40 @@ function Game({ socket }) {
     // Has Opponets Piece
     if (upRight.pieceColor != playerColor) {
 
-      checkSquaresRecursive(upRight, "upRight");
+      recursiveTwo(upRight, null);
+      // checkSquaresRecursive(upRight, "upRight");
+    }
+  }
+  function recursiveTwo(current, lastPieceType) {
+    if (!current) return;
+    let y = current.position[0];
+    let x = current.position[1];
+    if (!y || !x) return;
+    // if (y + 1 > 8 || y - 1 == 0) return
+    if (current.pieceColor == playerColor) return;
+    if (current.pieceColor == null && lastPieceType == null) return;
+    if (current.pieceColor == null) {
+      current.highlight = "-highlight";
+      recursiveTwo(grid.current[y - 1][x - 1], current.pieceType);
+      recursiveTwo(grid.current[y - 1][x + 1], current.pieceType);
+      if (!(y - 10 < 0)) {
+
+        recursiveTwo(grid.current[y - 10][x + 1], current.pieceType);
+      }
+      return
+
+    }
+    if (current.pieceColor != playerColor) {
+      recursiveTwo(grid.current[y - 1][x - 1], current.pieceType);
+      recursiveTwo(grid.current[y - 1][x + 1], current.pieceType);
+      return
     }
   }
 
   function checkSquaresRecursive(current, direction) {
+    // console.log("Setting next for:", current.position)
     if (!current) return;
-    // console.log(current.position, direction, current.possible)
+    console.log(current.position, direction, current.possible)
     let y = current.position[0];
     let x = current.position[1];
     let next;
@@ -156,7 +185,6 @@ function Game({ socket }) {
           next = grid.current[y - 1][x - 1];
         }
         if (direction == "upRight" && y && x) {
-          console.log("Setting next for:", current.position)
           next = grid.current[y - 1][x + 1];
         }
         break;
@@ -170,10 +198,17 @@ function Game({ socket }) {
         break;
     }
     if (current.pieceColor == playerColor) return console.log("2");
-    if (current.pieceColor == null && next && next.pieceColor == null) return console.log("3");
-    if (current.pieceColor == null) {
+    if (current.pieceColor == null && next && next.pieceColor == null) {
+      checkSquaresRecursive(grid.current[y - 1[x - 1]], "upLeft");
       current.possible = true;
-      console.log(current)
+      current.highlight = "-highlight";
+      return console.log("3");
+    }
+    if (current.pieceColor == null) {
+      // checkUpLeft(grid.current[y - 1[x - 1]]);
+      current.possible = true;
+      current.highlight = "-highlight";
+      // console.log(current)
       if (!next) return console.log("1");
       return checkSquaresRecursive(next, direction);
     }
@@ -182,6 +217,7 @@ function Game({ socket }) {
       if (!next) return console.log("1");
       return checkSquaresRecursive(next, direction);
     }
+    return checkSquaresRecursive(grid.current[y - 1[x - 1]], "upRight");
   }
 
   // function checkForBounds(y, x) {

@@ -18,7 +18,7 @@ http.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
 
-const startPosition = "0101010000101010010000011000100003030000300000300003030300303030";
+const startPosition = "00000000001010100000000010101010030303030000000000000000333333333";
 // Make some tables
 const tableOne = new Table("table_one", 1);
 const tableTwo = new Table("table_two", 2);
@@ -166,8 +166,11 @@ io.on('connection', (socket) => {
     console.log(user)
     console.log(table)
     table.fen = data;
-    changeTableColor(table);
     io.to(user.table).emit("recieve_fen", table.fen);
+  })
+  socket.on("request_change_turn", () => {
+    let table = tableMap[user.table];
+    changeTableColor(table);
     io.to(user.table).emit("recieve_table_color", table.turnColor);
   })
 
