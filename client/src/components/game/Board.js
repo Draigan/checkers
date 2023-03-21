@@ -1,6 +1,10 @@
 import { useRef, useEffect, useState } from 'react'
 import Square from "./Square";
 import useFetch from '../../hooks/useFetch'
+import white from '../../assets/white.png'
+import whiteking from '../../assets/whiteking.png'
+import red from '../../assets/red.png'
+import redking from '../../assets/redking.png'
 
 function Board({ grid, socket, clickSquare, fen, setFen, readFen, writeFen }) {
 
@@ -12,9 +16,6 @@ function Board({ grid, socket, clickSquare, fen, setFen, readFen, writeFen }) {
     // console.log("fen", fen);
   })
 
-  function onMove() {
-    socket.emit("request_fen", writeFen());
-  }
 
   // Align the board so the current player is always at the bottom
   socket.emit("request_flip");
@@ -38,7 +39,12 @@ function Board({ grid, socket, clickSquare, fen, setFen, readFen, writeFen }) {
         return (
           <div key={square.id} onClick={() => { clickSquare(square.position); }}
             className={`${square.cssStyle} square ${square.highlight}`} >
-            {square.pieceType}
+
+            {square.pieceType == "white" && <img className={"piece"} src={white} alt="white" />}
+            {square.pieceType == "whiteking" && <img className={"piece"} src={whiteking} alt="white-king" />}
+            {square.pieceType == "red" && <img className={`piece`} src={red} alt="red" />}
+            {square.pieceType == "redking" && <img className={"piece"} src={redking} alt="red-king" />}
+
             {/* <Square key={square.id} grid={grid.current} square={square} /> */}
 
           </div>
