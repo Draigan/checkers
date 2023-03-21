@@ -254,10 +254,10 @@ function Game({ socket }) {
           grid.current[y - 2][x - 2].jump = true;
           highlight(grid.current[y - 2][x - 2], 2)
         } else {
-          highlight(grid.current[y - 2][x - 2])
+          highlight(grid.current[y - 2][x - 2], 1)
         }
         console.log(!test.includes(current.id), "1")
-        jumpSquaresRecursive(grid.current[y - 2][x - 2], false);
+        jumpSquaresRecursive(grid.current[y - 2][x - 2], false, king);
       }
       //UP RIGHT
       if (
@@ -275,7 +275,7 @@ function Game({ socket }) {
           highlight(grid.current[y - 2][x + 2], 1);
         }
         console.log(!test.includes(current.id), "2")
-        jumpSquaresRecursive(grid.current[y - 2][x + 2], false);
+        jumpSquaresRecursive(grid.current[y - 2][x + 2], false, king);
       }
 
     }
@@ -297,7 +297,7 @@ function Game({ socket }) {
           highlight(grid.current[y + 2][x - 2], 1);
         }
         console.log(!test.includes(current.id), "3")
-        jumpSquaresRecursive(grid.current[y + 2][x - 2], false);
+        jumpSquaresRecursive(grid.current[y + 2][x - 2], false, king);
       }
       // DOWN RIGHT
       if (
@@ -315,7 +315,7 @@ function Game({ socket }) {
           highlight(grid.current[y + 2][x + 2], 2);
         }
         console.log(!test.includes(current.id), "4")
-        jumpSquaresRecursive(grid.current[y + 2][x + 2], false);
+        jumpSquaresRecursive(grid.current[y + 2][x + 2], false, king);
       }
 
     }

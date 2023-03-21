@@ -1,38 +1,32 @@
 .board {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
-  width: 40%;
   color: white; }
 
 .square {
   aspect-ratio: 1;
+  width: 3rem;
   display: flex;
   justify-content: center;
   align-items: center; }
 
 .square-white {
-  background-color: #A59EA1; }
+  background-color: #A7E7FE; }
 
 .square-black {
-  background-color: #046248; }
+  background-color: #F47C8E; }
 
-.piece-red {
-  background: red;
-  border-radius: 50%;
-  width: 80%;
-  height: 80%; }
-
-.piece-white {
-  background: white;
-  border-radius: 50%;
-  width: 80%;
-  height: 80%; }
+.piece {
+  width: 100%; }
 
 .-border {
   border: 3px solid black; }
 
 .-highlight {
   background-color: purple; }
+
+.-highlight-possible {
+  background-color: red; }
 
 .-flip {
   transform: rotate(180deg); }
