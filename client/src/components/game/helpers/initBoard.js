@@ -14,7 +14,8 @@ export function initBoard() {
         possible: false,
         squareColor: null,
         cssStyle: null,
-        highlight: ""
+        highlight: "",
+        jump: false,
       };
       // Set board colors
       setBoardColors(i, j);
