@@ -16,6 +16,8 @@ export function initBoard() {
         cssStyle: null,
         highlight: "",
         jump: false,
+        recursiveJump: false,
+        basic: false,
         clickable: true,
       };
       // Set board colors
