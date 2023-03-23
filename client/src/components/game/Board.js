@@ -1,12 +1,11 @@
 import { useRef, useEffect, useState } from 'react'
-import Square from "./Square";
 import useFetch from '../../hooks/useFetch'
 import white from '../../assets/white.png'
 import whiteking from '../../assets/whiteking.png'
 import red from '../../assets/red.png'
 import redking from '../../assets/redking.png'
 
-function Board({ grid, socket, clickSquare, setFen, readFen }) {
+function Board({ grid, socket, clickSquare, setFen }) {
 
   const [flip, setFlip] = useState("");
 
@@ -29,7 +28,7 @@ function Board({ grid, socket, clickSquare, setFen, readFen }) {
 
   return (
     <div className={`board ${flip}`} >
-      {grid.current.map((row) => row.map((square) => {
+      {grid.map((row) => row.map((square) => {
         return (
           <div key={square.id} onClick={() => { clickSquare(square.position); }}
             className={`${square.cssStyle} square ${square.highlight}`} >

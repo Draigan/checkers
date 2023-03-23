@@ -1,6 +1,23 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import Board from "./Board";
 import initBoard from './helpers/initBoard.js'
+import {
+  removePiece,
+  writeFen,
+  readFen,
+  resetHighlightPossible,
+  kingPiece,
+  jumpUpLeftCondition,
+  jumpUpRightCondition,
+  jumpDownLeftCondition,
+  jumpDownRightCondition,
+  outOfBounds,
+  highlight,
+  resetJump,
+  checkForJumps,
+  resetBasic
+}
+  from './helpers/helpers.js'
 
 function Game({ socket }) {
   const [fen, setFen] = useState("");
@@ -10,9 +27,10 @@ function Game({ socket }) {
   const [tableColor, setTableColor] = useState(null);
   const [squareStart, setSquareStart] = useState();
   const [inTransit, setInTransit] = useState();
-  const grid = useRef(initBoard());
+  const tmp = useRef(initBoard());
+  const grid = tmp.current;
   let path = [];
-  readFen(grid.current);
+  readFen(grid, fen);
 
   socket.on("recieve_player_color", (color) => {
     setPlayerColor(color);
@@ -21,36 +39,6 @@ function Game({ socket }) {
     setTableColor(color);
   })
 
-  function resetJump(grid) {
-    for (let i = 0; i < 8; i++) {
-      for (let j = 0; j < 8; j++) {
-        if (grid[i][j].jump) {
-          grid[i][j].jump = false;
-        }
-      }
-    }
-  }
-  function resetBasic(grid) {
-    for (let i = 0; i < 8; i++) {
-      for (let j = 0; j < 8; j++) {
-        grid[i][j].basic = false;
-        grid[i][j].clickable = true;
-      }
-    }
-  }
-
-  function checkForJumps(grid) {
-    let hasJumpLeft = false;
-    for (let i = 0; i < 8; i++) {
-      for (let j = 0; j < 8; j++) {
-        if (grid[i][j].jump) {
-          hasJumpLeft = true;
-        }
-      }
-    }
-    return hasJumpLeft
-  }
-
   function checkingForJumps(grid) {
     for (let i = 0; i < 8; i++) {
       for (let j = 0; j < 8; j++) {
@@ -58,50 +46,41 @@ function Game({ socket }) {
         if (
           grid[i][j].pieceType == "white"
           && playerColor == "white"
-          && jumpUpLeftCondition(i, j)
-          || jumpUpRightCondition(i, j)
+          && jumpUpLeftCondition(i, j, grid)
+          || jumpUpRightCondition(i, j, grid)
         ) {
-          // grid[i][j].clickable = true;
-          console.log("1111111111111111")
           return true;
         }
         if (
           grid[i][j].pieceType == "red"
           && playerColor == "red"
-          && jumpDownRightCondition(i, j)
-          || jumpDownLeftCondition(i, j)
+          && jumpDownRightCondition(i, j, grid)
+          || jumpDownLeftCondition(i, j, grid)
         ) {
-          // grid[i][j].clickable = true;
-          console.log("222222222")
           return true;
         }
         if (grid[i][j].pieceType == "whiteking"
           && playerColor == "white"
-          && jumpUpLeftCondition(i, j)
-          || jumpUpRightCondition(i, j)
-          || jumpDownRightCondition(i, j)
-          || jumpDownLeftCondition(i, j)
+          && jumpUpLeftCondition(i, j, grid)
+          || jumpUpRightCondition(i, j, grid)
+          || jumpDownRightCondition(i, j, grid)
+          || jumpDownLeftCondition(i, j, grid)
         ) {
-          // grid[i][j].clickable = true;
-          console.log("3333333333333")
           return true;
         }
         if (grid[i][j].pieceType == "redking"
           && playerColor == "red"
-          && jumpUpLeftCondition(i, j)
-          || jumpUpRightCondition(i, j)
-          || jumpDownRightCondition(i, j)
-          || jumpDownLeftCondition(i, j)
+          && jumpUpLeftCondition(i, j, grid)
+          || jumpUpRightCondition(i, j, grid)
+          || jumpDownRightCondition(i, j, grid)
+          || jumpDownLeftCondition(i, j, grid)
         ) {
-          // grid[i][j].clickable = true;
-          console.log("44444444444")
           return true;
         }
       }
     }
     return false;
   }
-
 
   function supressNonJumps(grid) {
     if (checkingForJumps(grid)) {
@@ -116,42 +95,6 @@ function Game({ socket }) {
         }
       }
     }
-  }
-  // resetClickable(grid.current);
-
-  function resetHighlightPossible(grid) {
-    for (let i = 0; i < 8; i++) {
-      for (let j = 0; j < 8; j++) {
-        grid[i][j].highlight = "";
-        grid[i][j].possible = false;
-
-      }
-    }
-  }
-
-  function kingPiece(grid) {
-    for (let i = 0; i < 8; i++) {
-      if (grid[0][i].pieceType == "white") {
-        grid[0][i].pieceType = "whiteking"
-      }
-      if (grid[7][i].pieceType == "red") {
-        grid[7][i].pieceType = "redking"
-      }
-    }
-  }
-
-  function highlight(square, type) {
-    if (type == 1) {
-      square.highlight = "-highlight";
-    }
-    if (type == 2) {
-      square.highlight = "-highlight-possible";
-    }
-  }
-
-  function outOfBounds(y, x) {
-    if (y > 7 || y < 0 || x > 7 || x < 0) return true;
-    return false;
   }
 
   function capturePiece(grid, startSquare, endSquare) {
@@ -172,25 +115,19 @@ function Game({ socket }) {
     } else {
       removalSquare[1] = startX + 1;
     }
-    grid[removalSquare[0]][removalSquare[1]].pieceType = null;
-    grid[removalSquare[0]][removalSquare[1]].pieceColor = null;
+    removePiece(grid[removalSquare[0]][removalSquare[1]]);
   }
 
-  function removePiece(square) {
-    square.pieceType = null;
-    square.pieceColor = null;
-  }
   function changeTurn(socket, grid) {
     kingPiece(grid);
-    // resetBasic(grid);
-    socket.emit("request_fen", writeFen());
+    socket.emit("request_fen", writeFen(grid));
     socket.emit("request_change_turn");
   }
 
   function clickSquare(position) {
     let y = position[0];
     let x = position[1];
-    let current = grid.current[y][x];
+    let current = grid[y][x];
     console.log(current)
     if (!current.clickable) return;
     console.log("second return")
@@ -198,40 +135,40 @@ function Game({ socket }) {
     console.log("third return")
     if (playerColor != tableColor) return;
     console.log("fourth return")
-    if (current.pieceColor != playerColor && current.pieceType != null) return resetHighlightPossible(grid.current);
+    if (current.pieceColor != playerColor && current.pieceType != null) return resetHighlightPossible(grid);
 
     // Second Click
     if (clickedState && current.possible) {
       current.pieceType = squareStart.pieceType;
 
       removePiece(squareStart);
-      socket.emit("request_fen", writeFen());
-      resetHighlightPossible(grid.current);
+      socket.emit("request_fen", writeFen(grid));
+      resetHighlightPossible(grid);
       if (current.jump) {
         highlight(current, 1);
-        capturePiece(grid.current, squareStart, current)
-        socket.emit("request_fen", writeFen());
+        capturePiece(grid, squareStart, current)
+        socket.emit("request_fen", writeFen(grid));
         setInTransit(true);
-        resetJump(grid.current)
+        resetJump(grid)
         if (current.pieceType == "whiteking" || current.pieceType == "redking") {
           jumpSquaresRecursive(current, true, true);
         } else {
           jumpSquaresRecursive(current, true);
         }
-        if (!checkForJumps(grid.current)) {
+        if (!checkForJumps(grid)) {
           setInTransit(false);
           path = [];
           console.log("out of jumps!!!!!!!!!!!")
-          resetHighlightPossible(grid.current);
-          changeTurn(socket, grid.current);
+          resetHighlightPossible(grid);
+          changeTurn(socket, grid);
         }
         setSquareStart(current);
 
       } else {
         setSquareStart(null);
-        resetHighlightPossible(grid.current);
+        resetHighlightPossible(grid);
         setClickedState(false);
-        changeTurn(socket, grid.current);
+        changeTurn(socket, grid);
         path = []
       }
       return;
@@ -239,38 +176,38 @@ function Game({ socket }) {
 
     // First Click
     if (current.pieceColor != playerColor) return;
-    resetBasic(grid.current);
-    resetHighlightPossible(grid.current);
+    resetBasic(grid);
+    resetHighlightPossible(grid);
     setClickedState(true)
     highlight(current, 1);
     checkPossibleMoves(y, x, current);
     setSquareStart(current);
-    supressNonJumps(grid.current);
+    supressNonJumps(grid);
   }
 
   function checkPossibleMoves(y, x, current) {
     if (current.pieceType == "whiteking" || current.pieceType == "redking") {
       if (!outOfBounds(y - 1, x - 1))
-        checkSurroundings(grid.current[y - 1][x - 1], current, true);
+        checkSurroundings(grid[y - 1][x - 1], current, true);
       if (!outOfBounds(y - 1, x + 1))
-        checkSurroundings(grid.current[y - 1][x + 1], current, true);
+        checkSurroundings(grid[y - 1][x + 1], current, true);
       if (!outOfBounds(y + 1, x - 1))
-        checkSurroundings(grid.current[y + 1][x - 1], current, true);
+        checkSurroundings(grid[y + 1][x - 1], current, true);
       if (!outOfBounds(y + 1, x + 1))
-        checkSurroundings(grid.current[y + 1][x + 1], current, true);
+        checkSurroundings(grid[y + 1][x + 1], current, true);
       return;
     }
     if (playerColor == "white") {
       if (!outOfBounds(y - 1, x - 1))
-        checkSurroundings(grid.current[y - 1][x - 1], current);
+        checkSurroundings(grid[y - 1][x - 1], current);
       if (!outOfBounds(y - 1, x + 1))
-        checkSurroundings(grid.current[y - 1][x + 1], current);
+        checkSurroundings(grid[y - 1][x + 1], current);
     }
     if (playerColor == "red") {
       if (!outOfBounds(y + 1, x - 1))
-        checkSurroundings(grid.current[y + 1][x - 1], current);
+        checkSurroundings(grid[y + 1][x - 1], current);
       if (!outOfBounds(y + 1, x + 1))
-        checkSurroundings(grid.current[y + 1][x + 1], current);
+        checkSurroundings(grid[y + 1][x + 1], current);
     }
   }
 
@@ -294,59 +231,6 @@ function Game({ socket }) {
     }
   }
 
-  function jumpUpLeftCondition(y, x) {
-    if (
-      x - 2 >= 0 && y - 2 >= 0
-      && grid.current[y - 1][x - 1].pieceColor != playerColor
-      && grid.current[y - 1][x - 1].pieceColor != grid.current[y][x].pieceColor
-      && grid.current[y - 1][x - 1].pieceColor != null
-      && grid.current[y - 2][x - 2].pieceColor == null
-    ) {
-      console.log("UPLEFT CONDITIONAAAAAl")
-      return true;
-    }
-    return false;
-  }
-  function jumpUpRightCondition(y, x) {
-    if (
-      x + 2 <= 7 && y - 2 >= 0
-      && grid.current[y - 1][x + 1].pieceColor != playerColor
-      && grid.current[y - 1][x + 1].pieceColor != grid.current[y][x].pieceColor
-      && grid.current[y - 1][x + 1].pieceColor != null
-      && grid.current[y - 2][x + 2].pieceColor == null
-    ) {
-      console.log("uPRIGHTY CONDITIONAAAAAl")
-      return true;
-    }
-    return false;
-  }
-  function jumpDownLeftCondition(y, x) {
-    if (
-      x - 2 >= 0 && y + 2 <= 7
-      && grid.current[y + 1][x - 1].pieceColor != playerColor
-      && grid.current[y + 1][x - 1].pieceColor != grid.current[y][x].pieceColor
-      && grid.current[y + 1][x - 1].pieceColor != null
-      && grid.current[y + 2][x - 2].pieceColor == null
-    ) {
-      console.log("DOWNLEFT CONDITIONAAAAAl", y, x)
-      return true;
-    }
-    return false;
-  }
-  function jumpDownRightCondition(y, x) {
-    if (
-      x + 2 <= 7 && y + 2 <= 7
-      && grid.current[y + 1][x + 1].pieceColor != playerColor
-      && grid.current[y + 1][x + 1].pieceColor != grid.current[y][x].pieceColor
-      && grid.current[y + 1][x + 1].pieceColor != null
-      && grid.current[y + 2][x + 2].pieceColor == null
-    ) {
-      console.log("DOWNRIGHT CONDITIONAAAAAl")
-      return true;
-    }
-    return false;
-  }
-
   function jumpSquaresRecursive(current, firstTry, king) {
     let y = current.position[0];
     let x = current.position[1];
@@ -359,29 +243,29 @@ function Game({ socket }) {
     // that are possible jumps are marked as possible immediately, not as the end of a sequence.
     if (firstTry && king) {
       // UP LEFT
-      if (jumpUpLeftCondition(y, x)) {
-        grid.current[y - 2][x - 2].possible = true;
-        grid.current[y - 2][x - 2].jump = true;
-        highlight(grid.current[y - 2][x - 2], 2)
+      if (jumpUpLeftCondition(y, x, grid, playerColor)) {
+        grid[y - 2][x - 2].possible = true;
+        grid[y - 2][x - 2].jump = true;
+        highlight(grid[y - 2][x - 2], 2)
       }
       //UP RIGHT
-      if (jumpUpRightCondition(y, x)) {
-        grid.current[y - 2][x + 2].possible = true;
-        grid.current[y - 2][x + 2].jump = true;
-        highlight(grid.current[y - 2][x + 2], 2);
+      if (jumpUpRightCondition(y, x, grid, playerColor)) {
+        grid[y - 2][x + 2].possible = true;
+        grid[y - 2][x + 2].jump = true;
+        highlight(grid[y - 2][x + 2], 2);
       }
       // DOWN LEFT
-      if (jumpDownLeftCondition(y, x)) {
-        grid.current[y + 2][x - 2].possible = true;
-        grid.current[y + 2][x - 2].jump = true;
-        highlight(grid.current[y + 2][x - 2], 2);
+      if (jumpDownLeftCondition(y, x, grid, playerColor)) {
+        grid[y + 2][x - 2].possible = true;
+        grid[y + 2][x - 2].jump = true;
+        highlight(grid[y + 2][x - 2], 2);
       }
       // DOWN RIGHT
-      if (jumpDownRightCondition(y, x)) {
+      if (jumpDownRightCondition(y, x, grid, playerColor)) {
         if (firstTry) {
-          grid.current[y + 2][x + 2].possible = true;
-          grid.current[y + 2][x + 2].jump = true;
-          highlight(grid.current[y + 2][x + 2], 2);
+          grid[y + 2][x + 2].possible = true;
+          grid[y + 2][x + 2].jump = true;
+          highlight(grid[y + 2][x + 2], 2);
         }
       }
     }
@@ -389,111 +273,60 @@ function Game({ socket }) {
 
     //UP LEFT
     if (playerColor == "white" || king) {
-      if (jumpUpLeftCondition(y, x) && !path.includes(grid.current[y - 2][x - 2].id)) {
+      if (jumpUpLeftCondition(y, x, grid, playerColor) && !path.includes(grid[y - 2][x - 2].id)) {
         if (firstTry) {
-          grid.current[y - 2][x - 2].possible = true;
-          grid.current[y - 2][x - 2].jump = true;
-          highlight(grid.current[y - 2][x - 2], 2)
+          grid[y - 2][x - 2].possible = true;
+          grid[y - 2][x - 2].jump = true;
+          highlight(grid[y - 2][x - 2], 2)
         } else {
-          highlight(grid.current[y - 2][x - 2], 1)
-          // grid.current[y - 2][x - 2].recursiveJump = true;
+          highlight(grid[y - 2][x - 2], 1)
+          // grid[y - 2][x - 2].recursiveJump = true;
         }
-        jumpSquaresRecursive(grid.current[y - 2][x - 2], false, king);
+        jumpSquaresRecursive(grid[y - 2][x - 2], false, king);
       }
       //UP RIGHT
-      if (jumpUpRightCondition(y, x) && !path.includes(grid.current[y - 2][x + 2].id)
+      if (jumpUpRightCondition(y, x, grid, playerColor) && !path.includes(grid[y - 2][x + 2].id)
       ) {
         if (firstTry) {
-          grid.current[y - 2][x + 2].possible = true;
-          grid.current[y - 2][x + 2].jump = true;
-          highlight(grid.current[y - 2][x + 2], 2);
+          grid[y - 2][x + 2].possible = true;
+          grid[y - 2][x + 2].jump = true;
+          highlight(grid[y - 2][x + 2], 2);
         } else {
-          highlight(grid.current[y - 2][x + 2], 1);
-          // grid.current[y - 2][x + 2].recursiveJump = true;
+          highlight(grid[y - 2][x + 2], 1);
+          // grid[y - 2][x + 2].recursiveJump = true;
         }
-        jumpSquaresRecursive(grid.current[y - 2][x + 2], false, king);
+        jumpSquaresRecursive(grid[y - 2][x + 2], false, king);
 
       }
     }
     // DOWN LEFT
     if (playerColor == "red" || king) {
-      if (jumpDownLeftCondition(y, x) && !path.includes(grid.current[y + 2][x - 2].id)) {
+      if (jumpDownLeftCondition(y, x, grid, playerColor) && !path.includes(grid[y + 2][x - 2].id)) {
         if (firstTry) {
-          grid.current[y + 2][x - 2].possible = true;
-          grid.current[y + 2][x - 2].jump = true;
-          highlight(grid.current[y + 2][x - 2], 2);
+          grid[y + 2][x - 2].possible = true;
+          grid[y + 2][x - 2].jump = true;
+          highlight(grid[y + 2][x - 2], 2);
         } else {
-          highlight(grid.current[y + 2][x - 2], 1);
-          // grid.current[y + 2][x - 2].recursiveJump = true;
+          highlight(grid[y + 2][x - 2], 1);
+          // grid[y + 2][x - 2].recursiveJump = true;
         }
-        jumpSquaresRecursive(grid.current[y + 2][x - 2], false, king);
+        jumpSquaresRecursive(grid[y + 2][x - 2], false, king);
       }
       // DOWN RIGHT
-      if (jumpDownRightCondition(y, x) && !path.includes(grid.current[y + 2][x + 2].id)) {
+      if (jumpDownRightCondition(y, x, grid, playerColor) && !path.includes(grid[y + 2][x + 2].id)) {
         if (firstTry) {
-          grid.current[y + 2][x + 2].possible = true;
-          grid.current[y + 2][x + 2].jump = true;
-          highlight(grid.current[y + 2][x + 2], 2);
+          grid[y + 2][x + 2].possible = true;
+          grid[y + 2][x + 2].jump = true;
+          highlight(grid[y + 2][x + 2], 2);
         } else {
-          highlight(grid.current[y + 2][x + 2], 1);
-          // grid.current[y + 2][x + 2].recursiveJump = true;
+          highlight(grid[y + 2][x + 2], 1);
+          // grid[y + 2][x + 2].recursiveJump = true;
         }
-        jumpSquaresRecursive(grid.current[y + 2][x + 2], false, king);
+        jumpSquaresRecursive(grid[y + 2][x + 2], false, king);
       }
     }
   }
 
-  function readFen(grid) {
-    let count = 0;
-    for (let i = 0; i < 8; i++) {
-      for (let j = 0; j < 8; j++) {
-        if (fen[count] == "1") {
-          grid[i][j].pieceType = "red";
-          grid[i][j].pieceColor = "red";
-        }
-        if (fen[count] == "2") {
-          grid[i][j].pieceType = "redking";
-          grid[i][j].pieceColor = "red";
-        }
-        if (fen[count] == "3") {
-          grid[i][j].pieceType = "white";
-          grid[i][j].pieceColor = "white";
-        }
-        if (fen[count] == "4") {
-          grid[i][j].pieceType = "whiteking";
-          grid[i][j].pieceColor = "white";
-        }
-        if (fen[count] == "0") {
-          grid[i][j].pieceType = null;
-          grid[i][j].pieceColor = null;
-        }
-        count++;
-      }
-    }
-  }
-  function writeFen() {
-    let tmp = "";
-    for (let i = 0; i < 8; i++) {
-      for (let j = 0; j < 8; j++) {
-        if (grid.current[i][j].pieceType == "red") {
-          tmp += "1";
-        }
-        if (grid.current[i][j].pieceType == "redking") {
-          tmp += "2";
-        }
-        if (grid.current[i][j].pieceType == "white") {
-          tmp += "3";
-        }
-        if (grid.current[i][j].pieceType == "whiteking") {
-          tmp += "4";
-        }
-        if (grid.current[i][j].pieceType == null) {
-          tmp += "0";
-        }
-      }
-    }
-    return tmp;
-  }
   return (
     <>
       <Board grid={grid}
@@ -511,5 +344,5 @@ function Game({ socket }) {
   );
 }
 
-
 export default Game;
+
