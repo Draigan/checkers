@@ -2,9 +2,19 @@
   display: flex;
   gap: 1%;
   justify-content: center;
-  align-items: center; }
+  align-items: center;
+  padding: 2rem; }
 
 .table--left-column {
   width: 24%; }
+
+.table--title {
+  text-align: center;
+  background-color: pink;
+  margin-bottom: 3rem; }
+
+@media only screen and (max-width: 900px) {
+  .table {
+    padding: 0; } }
 
 /*# sourceMappingURL=table.css.map */

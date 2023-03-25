@@ -6,20 +6,15 @@ import Table from "./components/pages/Table";
 import Home from "./components/pages/Home";
 import Login from "./components/pages/Login";
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'
 const socket = io.connect("localhost:4001");
 
 function App() {
-  // Prevent reloa d
-  // window.addEventListener("beforeunload", (event) => {
-  //   event.preventDefault();
-  //   return event.returnValue = "DONT LEAVE"
-  // });
-  const [globalUserName, setGlobalUserName] = useState("anon");
-  // useEffect(() => {
-  //   socket.on("recieve_message", (data) => {
-  //     console.log(data)
-  //   }, [socket])
-  // });
+  const navigate = useNavigate();
+  socket.on("recieve_new_connection", () => {
+    navigate("/");
+  })
+  const [globalUserName, setGlobalUserName] = useState(null);
 
 
   return (

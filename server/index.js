@@ -18,13 +18,10 @@ http.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
 
-// const startPosition = "00000000001010100000000010201010000304030000000000000000333333333";
 //Testing
-const startPosition = "00000000002020200000000010302040030304040000000004040404000000000";
+const startPosition = "0101010110101010010101010000000000000000303030300303030330303030";
 
-// const startPosition = "00000000000000000000000010101010040000040000000004040404000000000";
-// const startPosition = "00000000000000000000000010101010000000040000000004040404000000000";
-// King testing
+// const startPosition = "0101000010101010010001000030003000010303000000000300030030000030";
 
 // Make some tables
 const tableOne = new Table("table_one", 1);
@@ -51,8 +48,6 @@ const tableMap = {
   "table_four": tableFour,
 }
 
-
-
 function joinTable(socket, user, table, id) {
   if (tableMap[table].players?.includes(user.name)) return;
   // Seat the user at the table
@@ -66,20 +61,13 @@ function joinTable(socket, user, table, id) {
   socket.join(table);
   resetTable(tableMap[table], socket);
   sendTableStatus();
-  // console.log("the following user is at this table", users.find((user) => user.table == table));
   user.tableID = id;
   user.table = table;
   tableMap[table].players.push(user.name);
-  // Assign them a color
-  // console.log(user.name, "Joined", table, "id:", id);
-  // console.log(table, tableMap[table].players)
-  // console.log("user status:", user)
-  // console.log("users", users)
   socket.emit("recieve_player_color", user.playerColor)
   socket.emit("recieve_table_color", "white");
-  // console.log("player playColor", user.playerColor)
-  // console.log("table turnColor", table.turnColor)
-  // logRooms();
+  io.to(table).emit("recieve_foe_user", tableMap[user.table].players)
+  logRooms();
 }
 function resetTable(table, socket) {
   table.fen = startPosition;
@@ -92,18 +80,23 @@ function resetTable(table, socket) {
 
 function leaveTable(socket, user) {
   if (user.table == null) return;
+  io.to(user.table).emit('chat_recieve_message', {
+    text: ` left the table`,
+    username: `${user.name}`,
+    id: `${socket.id}${Math.random()}`,
+    sockedID: socket.id,
+    joinMessage: false,
+    leaveMessage: true,
+  })
+
   socket.leave(user.table);
-  sendTableStatus();
   // Set the the tables players list to a new arrray without the player in it
   tableMap[user.table].players = tableMap[user.table].players.filter((player) => player != user.name);
-  // Log the values we need before we set them to null
-  // console.log(user.name, "left table", user.table, "id:", user.tableID)
-  // console.log(user.table, tableMap[user.table].players)
+  io.to(user.table).emit("recieve_foe_user", tableMap[user.table].players)
   user.table = null;
   user.tableID = null;
   user.playerColor = null;
-  // console.log("user status:", user)
-  // logRooms();
+  logRooms();
 
 }
 
@@ -132,6 +125,7 @@ function sendTableStatus() {
     table_four: tableFour.players.length,
   });
 }
+setInterval(sendTableStatus, 100);
 
 function changeTableColor(table) {
   if (table.turnColor == "white") {
@@ -143,7 +137,7 @@ function changeTableColor(table) {
 }
 
 io.on('connection', (socket) => {
-
+  socket.emit("recieve_new_connection");
   let user = new User();
   users.push(user);
   console.log(`⚡: ${socket.id} user just connected!`);
@@ -166,6 +160,21 @@ io.on('connection', (socket) => {
       leaveTable(socket, user);
     }
   })
+
+  socket.on("request_reset_table", () => {
+    resetTable(tableMap[user.table], socket);
+    io.to(user.table).emit('chat_recieve_message', {
+      text: ` reset the table.`,
+      username: `${user.name}`,
+      id: `${socket.id}${Math.random()}`,
+      sockedID: socket.id,
+      joinMessage: false,
+      leaveMessage: true,
+    })
+    console.log("recieved")
+  })
+
+  // socket.emit("recieve_foe_user", tableMap[user.table].players)
 
   // This is basically a change of turn
   socket.on("request_fen", (data) => {
@@ -197,7 +206,7 @@ io.on('connection', (socket) => {
 
   socket.on('join_table', (table, id) => {
     joinTable(socket, user, table, id);
-    socket.emit("recieve_player_color", user.playerColor)
+    // socket.emit("recieve_player_color", user.playerColor)
   })
 });
 

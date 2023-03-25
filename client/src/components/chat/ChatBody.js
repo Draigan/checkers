@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-function ChatBody({ socket, messages }) {
+function ChatBody({ socket, messages, globalUserName, lastMessageRef }) {
 
   // useEffect(() => {
   //   socket.on('chat_recieve_message', (data) => {
@@ -11,18 +11,18 @@ function ChatBody({ socket, messages }) {
 
   return (
     <>
-      <div className="chat--body">
-        <ul>
-          {messages.map((message, index) => {
-            return (
-              <li key={index} >
-                {message}
-              </li>
-            );
-          })
-          }
-        </ul>
-      </div>
+      <ul className="chat--body" >
+        {messages.map((message, index) => {
+          return (
+            <li key={message.id} className="chat--message" >
+              <span className="chat--message-username">{message.username}</span>
+              <span className="chat--message-text">{message.text}</span>
+            </li>
+          );
+        })
+        }
+        <div ref={lastMessageRef} />
+      </ul>
     </>
 
   );

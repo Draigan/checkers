@@ -1,37 +1,45 @@
 .board {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
-  color: white; }
+  grid-template-rows: repeat(8, 1fr);
+  color: white;
+  width: 40rem; }
 
 .square {
-  aspect-ratio: 1;
-  width: 3rem;
   display: flex;
   justify-content: center;
-  align-items: center; }
+  align-items: center;
+  min-width: 1rem; }
 
 .square-white {
-  background-color: #A7E7FE; }
+  background-color: #ffe9f4; }
+
+.square:hover {
+  opacity: 0.8; }
 
 .square-black {
-  background-color: #F47C8E; }
+  background-color: pink; }
 
 .piece {
   width: 100%; }
 
 .green {
-  background-color: grey; }
+  background-color: #c9c9c9; }
 
 .-border {
   border: 3px solid black; }
 
 .-highlight {
-  background-color: purple; }
+  background-color: #C3B1E1; }
 
 .-highlight-possible {
-  background-color: red; }
+  background-color: #f7727d; }
 
 .-flip {
   transform: rotate(180deg); }
+
+@media only screen and (max-width: 900px) {
+  .board {
+    width: 100%; } }
 
 /*# sourceMappingURL=board.css.map */

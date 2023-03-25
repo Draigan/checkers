@@ -5,6 +5,7 @@ function Login({ socket }) {
   const [loginUser, setLoginUser] = useState(``);
   const navigate = useNavigate();
 
+  socket.emit("request_leave_table");
   function handleSubmit(e) {
     e.preventDefault();
     if (loginUser == "") {
@@ -15,18 +16,24 @@ function Login({ socket }) {
     navigate('/home')
   }
   return (
-    <div className="field">
-      <h1> Choose a username </h1>
-      <input
-        type="text"
-        minLength={6}
-        name="username"
-        id="username"
-        className="username--input"
-        onChange={(e) => setLoginUser(e.target.value)}
-      />
-      <button onClick={handleSubmit} type="submit">Submit</button>
-    </div>
+    <>
+      <h1 className="login--title">Online Checkers</h1>
+      <div className="login--body">
+        <h2>Choose Username:</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            maxlength="10"
+            type="text"
+            minLength={6}
+            name="username"
+            id="username"
+            className="username--input"
+            onChange={(e) => setLoginUser(e.target.value)}
+          />
+          <button onClick={handleSubmit} type="submit">Play Checkers</button>
+        </form>
+      </div>
+    </>
 
   );
 }

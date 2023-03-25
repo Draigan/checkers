@@ -129,7 +129,7 @@ function jumpUpLeftCondition(y, x, grid, playerColor) {
     && grid[y - 1][x - 1].pieceColor != null
     && grid[y - 2][x - 2].pieceColor == null
   ) {
-    console.log("UPLEFT CONDITIONAAAAAl")
+    console.log("UPLEFT CONDITIONAAAAAl", y, x)
     return true;
   }
   return false;
@@ -142,7 +142,7 @@ function jumpUpRightCondition(y, x, grid, playerColor) {
     && grid[y - 1][x + 1].pieceColor != null
     && grid[y - 2][x + 2].pieceColor == null
   ) {
-    console.log("uPRIGHTY CONDITIONAAAAAl")
+    console.log("uPRIGHTY CONDITIONAAAAAl", y, x, grid[y][x])
     return true;
   }
   return false;
@@ -168,7 +168,7 @@ function jumpDownRightCondition(y, x, grid, playerColor) {
     && grid[y + 1][x + 1].pieceColor != null
     && grid[y + 2][x + 2].pieceColor == null
   ) {
-    console.log("DOWNRIGHT CONDITIONAAAAAl")
+    console.log("DOWNRIGHT CONDITIONAAAAAl", y, x)
     return true;
   }
   return false;

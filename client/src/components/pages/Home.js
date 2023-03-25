@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react';
+import board from "../../assets/board.png"
 function Home({ socket, globalUserName, setGlobalUserName }) {
   const [tablesStatus, setTablesStatus] = useState({
     table_one: 0,
@@ -20,7 +21,7 @@ function Home({ socket, globalUserName, setGlobalUserName }) {
   socket.emit('request_leave_table');
 
   useEffect(() => {
-    //   socket.emit("request_table_status")
+    // socket.emit("request_table_status")
     socket.on("recieve_table_status", (data) => {
       setTablesStatus(data)
     })
@@ -33,24 +34,59 @@ function Home({ socket, globalUserName, setGlobalUserName }) {
 
 
   return (
-    <>
-      <ul>
-        <h1> WELCOME TO CHECKERS {globalUserName}  CHOOSE A GAME ROOM</h1>
-        <li><button onClick={() => {
-          joinTable(tablesStatus.table_one, 1);
-        }}>TABLE ONE {tablesStatus.table_one}</button></li>
-        <li><button onClick={() => {
-          joinTable(tablesStatus.table_two, 2);
-        }}>TABLE TWO {tablesStatus.table_two} </button></li>
-        <li><button onClick={() => {
-          joinTable(tablesStatus.table_three, 3);
-        }}>TABLE THREE {tablesStatus.table_three}</button></li>
-        <li><button onClick={() => {
-          joinTable(tablesStatus.table_four, 4);
-        }}>TABLE FOUR {tablesStatus.table_four}</button></li>
-      </ul>
-
-    </>
+    <div className="lobby">
+      <h1 className="lobby--title"> Welcome To Online Checkers, {globalUserName} </h1>
+      <div className="lobby--tables">
+        <div className="lobby--table">
+          <div className="lobby--table-top">
+            <div>
+              <h2> Table One </h2>
+              <h3> Players: {tablesStatus.table_one}/2 </h3>
+            </div>
+            <img className="lobby--board" src={board} alt="board" />
+          </div>
+          <button className="lobby--button" onClick={() => {
+            joinTable(tablesStatus.table_one, 1);
+          }}>Join Table</button>
+        </div>
+        <div className="lobby--table">
+          <div className="lobby--table-top">
+            <div>
+              <h2> Table Two </h2>
+              <h3> Players: {tablesStatus.table_two}/2 </h3>
+            </div>
+            <img className="lobby--board" src={board} alt="board" />
+          </div>
+          <button className="lobby--button" onClick={() => {
+            joinTable(tablesStatus.table_two, 2);
+          }}>Join Table</button>
+        </div>
+        <div className="lobby--table">
+          <div className="lobby--table-top">
+            <div>
+              <h2> Table Three </h2>
+              <h3> Players: {tablesStatus.table_three}/2 </h3>
+            </div>
+            <img className="lobby--board" src={board} alt="board" />
+          </div>
+          <button className="lobby--button" onClick={() => {
+            joinTable(tablesStatus.table_three, 3);
+          }}>Join Table</button>
+        </div>
+        <div className="lobby--table">
+          <div className="lobby--table-top">
+            <div>
+              <h2> Table Four </h2>
+              <h3> Players: {tablesStatus.table_four}/2 </h3>
+            </div>
+            <img className="lobby--board" src={board} alt="board" />
+          </div>
+          <button className="lobby--button" onClick={() => {
+            joinTable(tablesStatus.table_four, 4);
+          }}>Join Table</button>
+        </div>
+      </div>
+    </div>
 
   );
 }

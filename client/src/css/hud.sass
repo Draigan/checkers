@@ -1,0 +1,66 @@
+.hud
+  background-color: #C1EEFE
+  width: 10rem
+  height: 10rem
+  display: flex
+  flex-direction: column
+  margin-bottom: 8px
+
+.hud--players
+  display: flex
+  flex-direction: column
+  justify-content: space-evenly
+  flex: 1
+  
+
+.hud--piece
+  width: 35px
+
+.hud--player-name
+  display: flex
+  align-items: center
+  font-weight: bold
+
+.hud--highlight
+  color: black
+
+.hud--button
+  background-color: #C1EEFE
+  width: 80%
+  padding: 4px
+  text-align: center
+  border: 1px solid grey
+  // border-radius: 8px
+  margin: auto
+  margin-bottom: 8px
+  cursor: pointer
+  font-size: 14px
+  -webkit-touch-callout: none
+  -webkit-user-select: none 
+  -khtml-user-select: none 
+  -moz-user-select: none 
+  -ms-user-select: none 
+  user-select: none
+
+.hud--button:hover
+  background: pink
+  
+
+.hud--title
+  text-align: center
+  background-color: pink
+  padding: 2px
+
+
+.hud--waiting
+  font-weight: normal
+  font-size: 12px
+  animation: fade 3s infinite
+
+@keyframes fade
+  0%
+    opacity: 0.1
+  50%
+    opacity: 1
+  100%
+    opacity: 0.1
