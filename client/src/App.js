@@ -7,7 +7,7 @@ import Home from "./components/pages/Home";
 import Login from "./components/pages/Login";
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'
-const socket = io.connect("localhost:4001");
+const socket = io.connect("http://18.118.205.47:8080");
 
 function App() {
   const navigate = useNavigate();
