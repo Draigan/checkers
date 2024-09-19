@@ -22,7 +22,7 @@ function Login({ socket }) {
         <h2>Choose Username:</h2>
         <form onSubmit={handleSubmit}>
           <input
-            maxlength="10"
+            maxLength="10"
             type="text"
             minLength={6}
             name="username"

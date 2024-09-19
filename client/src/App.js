@@ -5,7 +5,7 @@ import Home from "./components/pages/Home";
 import Login from "./components/pages/Login";
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
-const socket = io.connect("http://localhost:8080");
+const socket = io.connect("https://ec2.draigan.com/");
 
 function App() {
   const navigate = useNavigate();
