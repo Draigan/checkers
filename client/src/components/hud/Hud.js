@@ -34,7 +34,7 @@ function Hud({ globalUserName, socket, playerColor, tableColor }) {
       let foe = data.filter((user) => user !== globalUserName);
       setFoeUserName(foe);
     })
-  }, [socket])
+  }, [socket, globalUserName])
   return (
     <div>
       <div className="hud">

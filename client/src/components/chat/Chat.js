@@ -27,7 +27,7 @@ function Chat({ socket, globalUserName }) {
         joinMessage: true,
       })
     })
-  }, [socket])
+  }, [socket, globalUserName])
 
   useEffect(() => {
     lastMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
