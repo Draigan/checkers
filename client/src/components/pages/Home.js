@@ -14,7 +14,7 @@ function Home({ socket, globalUserName, setGlobalUserName }) {
     socket.on('recieve_username', (data) => {
       setGlobalUserName(data);
     })
-  }, [setGlobalUserName]);
+  }, [socket, setGlobalUserName]);
 
   // Request to leave last table 
   socket.emit('request_leave_table');
