@@ -6,7 +6,7 @@ function ChatFooter({ socket, globalUserName }) {
   const chatInput = useRef();
   function handleSend(e) {
     e.preventDefault();
-    if (chatInput.current.value == "") return;
+    if (chatInput.current.value === "") return;
     socket.emit('chat_send_message', {
       text: message,
       username: globalUserName + ":",

@@ -39,55 +39,29 @@ function Game({ socket, globalUserName, tableColor, setTableColor, playerColor, 
   })
 
   function checkingForJumps(grid) {
-    if (playerColor != tableColor) return;
+    if (playerColor !== tableColor) return;
     for (let i = 0; i < 8; i++) {
       for (let j = 0; j < 8; j++) {
-        if (grid[i][j].pieceType == null) continue;
-        if (grid[i][j].pieceColor != playerColor) continue;
+        if (grid[i][j].pieceType === null) continue;
+        if (grid[i][j].pieceColor !== playerColor) continue;
 
-        if (playerColor == "white") {
+        if (playerColor === "white") {
           if (jumpUpLeftCondition(i, j, grid) || jumpUpRightCondition(i, j, grid)) {
             return true;
           }
         }
-        if (playerColor == "red") {
+        if (playerColor === "red") {
           if (jumpDownRightCondition(i, j, grid) || jumpDownLeftCondition(i, j, grid)) {
             return true;
           }
         }
-        // if (
-        //   playerColor == "white"
-        //   && jumpUpLeftCondition(i, j, grid)
-        //   || jumpUpRightCondition(i, j, grid)
-        // ) {
-        //   console.log("1111111111111")
-        //   return true;
-        // }
-        // if (
-        //   grid[i][j].pieceType == "red"
-        //   && jumpDownRightCondition(i, j, grid)
-        //   || jumpDownLeftCondition(i, j, grid)
-        // ) {
-        //   console.log("2222222")
-        //   return true;
-        // }
-        if (grid[i][j].pieceType == "whiteking" || grid[i][j].pieceType == "redking") {
+        if (grid[i][j].pieceType === "whiteking" || grid[i][j].pieceType === "redking") {
           console.log("number 3")
           if (jumpUpLeftCondition(i, j, grid) || jumpUpRightCondition(i, j, grid) || jumpDownRightCondition(i, j, grid) || jumpDownLeftCondition(i, j, grid)) {
             console.log("number 4")
             return true;
           }
         }
-        // if (grid[i][j].pieceType != "whiteking" || grid[i][j].pieceType != "redking") continue;
-        // if (
-        //   jumpUpLeftCondition(i, j, grid)
-        //   || jumpUpRightCondition(i, j, grid)
-        //   || jumpDownRightCondition(i, j, grid)
-        //   || jumpDownLeftCondition(i, j, grid)) {
-        //   console.log(grid[i][j])
-        //   console.log("33333333333")
-        //   return true;
-        // }
       }
     }
   }
@@ -141,7 +115,7 @@ function Game({ socket, globalUserName, tableColor, setTableColor, playerColor, 
 
     if (!current.clickable) return;
     if (inTransit && !current.jump) return
-    if (current.pieceColor != playerColor && current.pieceType != null) return resetHighlightPossible(grid);
+    if (current.pieceColor !== playerColor && current.pieceType !== null) return resetHighlightPossible(grid);
 
     // Second Click
     if (clickedState && current.possible) {
@@ -156,7 +130,7 @@ function Game({ socket, globalUserName, tableColor, setTableColor, playerColor, 
         socket.emit("request_fen", writeFen(grid));
         setInTransit(true);
         resetJump(grid)
-        if (current.pieceType == "whiteking" || current.pieceType == "redking") {
+        if (current.pieceType === "whiteking" || current.pieceType === "redking") {
           jumpSquaresRecursive(current, true, true);
         } else {
           jumpSquaresRecursive(current, true);
@@ -181,8 +155,8 @@ function Game({ socket, globalUserName, tableColor, setTableColor, playerColor, 
     }
 
     // First Click
-    if (current.pieceColor != playerColor) return;
-    if (tableColor != playerColor) return;
+    if (current.pieceColor !== playerColor) return;
+    if (tableColor !== playerColor) return;
     resetBasic(grid);
     resetHighlightPossible(grid);
     setClickedState(true)
@@ -193,7 +167,7 @@ function Game({ socket, globalUserName, tableColor, setTableColor, playerColor, 
   }
 
   function checkPossibleMoves(y, x, current) {
-    if (current.pieceType == "whiteking" || current.pieceType == "redking") {
+    if (current.pieceType === "whiteking" || current.pieceType === "redking") {
       if (!outOfBounds(y - 1, x - 1))
         checkSurroundings(grid[y - 1][x - 1], current, true);
       if (!outOfBounds(y - 1, x + 1))
@@ -204,13 +178,13 @@ function Game({ socket, globalUserName, tableColor, setTableColor, playerColor, 
         checkSurroundings(grid[y + 1][x + 1], current, true);
       return;
     }
-    if (playerColor == "white") {
+    if (playerColor === "white") {
       if (!outOfBounds(y - 1, x - 1))
         checkSurroundings(grid[y - 1][x - 1], current);
       if (!outOfBounds(y - 1, x + 1))
         checkSurroundings(grid[y - 1][x + 1], current);
     }
-    if (playerColor == "red") {
+    if (playerColor === "red") {
       if (!outOfBounds(y + 1, x - 1))
         checkSurroundings(grid[y + 1][x - 1], current);
       if (!outOfBounds(y + 1, x + 1))
@@ -221,17 +195,17 @@ function Game({ socket, globalUserName, tableColor, setTableColor, playerColor, 
   function checkSurroundings(adjacent, current, king) {
     if (!adjacent) return;
     // Case Free Square
-    if (adjacent.pieceType == null) {
+    if (adjacent.pieceType === null) {
       adjacent.possible = true;
       highlight(adjacent, 1);
       adjacent.basic = true;
       return;
     }
     // Case has player color piece 
-    if (adjacent.pieceColor == playerColor) return;
+    if (adjacent.pieceColor === playerColor) return;
 
     // Has Opponets Piece
-    if (adjacent.pieceColor != playerColor) {
+    if (adjacent.pieceColor !== playerColor) {
 
       jumpSquaresRecursive(current, true, king);
       // checkSquaresRecursive(adjacent, "upRight");
@@ -278,7 +252,7 @@ function Game({ socket, globalUserName, tableColor, setTableColor, playerColor, 
     //RECURSIVE SECTION
 
     //UP LEFT
-    if (playerColor == "white" || king) {
+    if (playerColor === "white" || king) {
       if (jumpUpLeftCondition(y, x, grid, playerColor) && !path.includes(grid[y - 2][x - 2].id)) {
         if (firstTry) {
           grid[y - 2][x - 2].possible = true;
@@ -304,7 +278,7 @@ function Game({ socket, globalUserName, tableColor, setTableColor, playerColor, 
       }
     }
     // DOWN LEFT
-    if (playerColor == "red" || king) {
+    if (playerColor === "red" || king) {
       if (jumpDownLeftCondition(y, x, grid, playerColor) && !path.includes(grid[y + 2][x - 2].id)) {
         if (firstTry) {
           grid[y + 2][x - 2].possible = true;

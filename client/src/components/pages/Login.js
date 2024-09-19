@@ -8,7 +8,7 @@ function Login({ socket }) {
   socket.emit("request_leave_table");
   function handleSubmit(e) {
     e.preventDefault();
-    if (loginUser == "") {
+    if (loginUser === "") {
       socket.emit("user_login", `anon#${Math.floor(Math.random() * 100000)}`);
     } else {
       socket.emit("user_login", loginUser);

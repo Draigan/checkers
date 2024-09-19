@@ -9,8 +9,8 @@ function Chat({ socket, globalUserName }) {
   useEffect(() => {
     socket.on('chat_recieve_message', (data) => {
       setMessages([...messages, data]);
-      if (messages[messages.length - 1].text == data.text
-        && messages[messages.length - 1].username == data.username) {
+      if (messages[messages.length - 1].text === data.text
+        && messages[messages.length - 1].username === data.username) {
         setMessages(messages.slice(0, messages.length));
       }
 

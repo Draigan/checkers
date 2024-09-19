@@ -1,13 +1,4 @@
-import { useEffect, useState } from 'react';
-
 function ChatBody({ socket, messages, globalUserName, lastMessageRef }) {
-
-  // useEffect(() => {
-  //   socket.on('chat_recieve_message', (data) => {
-  //     console.log(data)
-  //   })
-
-  // }, [socket]);
 
   return (
     <>

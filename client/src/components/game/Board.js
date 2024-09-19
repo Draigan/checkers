@@ -1,5 +1,4 @@
-import { useRef, useEffect, useState } from 'react'
-import useFetch from '../../hooks/useFetch'
+import { useState } from 'react'
 import white from '../../assets/white.png'
 import red from '../../assets/red.png'
 import redking from '../../assets/redking.png'
@@ -23,10 +22,10 @@ function Board({ grid, socket, globalUserName, clickSquare, setFen }) {
         return (
           <div key={square.id} onClick={() => { clickSquare(square.position); }}
             className={`${square.cssStyle} square ${square.highlight}`} >
-            {square.pieceType == "white" && <img className={`piece ${flip}`} src={white} alt="white" />}
-            {square.pieceType == "whiteking" && <img className={`piece ${flip}`} src={whiteking} alt="white-king" />}
-            {square.pieceType == "red" && <img className={`piece ${flip}`} src={red} alt="red" />}
-            {square.pieceType == "redking" && <img className={`piece ${flip}`} src={redking} alt="red-king" />}
+            {square.pieceType === "white" && <img className={`piece ${flip}`} src={white} alt="white" />}
+            {square.pieceType === "whiteking" && <img className={`piece ${flip}`} src={whiteking} alt="white-king" />}
+            {square.pieceType === "red" && <img className={`piece ${flip}`} src={red} alt="red" />}
+            {square.pieceType === "redking" && <img className={`piece ${flip}`} src={redking} alt="red-king" />}
           </div>
         )
       }))}

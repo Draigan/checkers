@@ -1,4 +1,3 @@
-import { Link, useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react';
 import board from "../../assets/board.png"
@@ -21,14 +20,13 @@ function Home({ socket, globalUserName, setGlobalUserName }) {
   socket.emit('request_leave_table');
 
   useEffect(() => {
-    // socket.emit("request_table_status")
     socket.on("recieve_table_status", (data) => {
       setTablesStatus(data)
     })
   }, [socket]);
 
   function joinTable(table, id) {
-    if (table == 2) return console.log("full");
+    if (table === 2) return console.log("full");
     navigate(`/table/${id}`)
   }
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import red from '../../assets/redking.png'
 import white from '../../assets/whiteking.png'
 import { useNavigate } from 'react-router-dom'
@@ -8,7 +8,7 @@ function Hud({ globalUserName, socket, playerColor, tableColor }) {
   const [foeUserName, setFoeUserName] = useState([]);
   const [tableFull, setTableFull] = useState(false);
   let tableColorForHud;
-  if (tableColor == "white") {
+  if (tableColor === "white") {
     tableColorForHud = "Blue"
   } else {
     tableColorForHud = "Red"
@@ -22,7 +22,6 @@ function Hud({ globalUserName, socket, playerColor, tableColor }) {
     navigate(`/home`)
 
   }
-
   useEffect(() => {
     socket.on("recieve_foe_user", (data) => {
       console.log(data)
@@ -32,7 +31,7 @@ function Hud({ globalUserName, socket, playerColor, tableColor }) {
       } else {
         setTableFull(false);
       }
-      let foe = data.filter((user) => user != globalUserName);
+      let foe = data.filter((user) => user !== globalUserName);
       setFoeUserName(foe);
     })
   }, [socket])
@@ -42,13 +41,13 @@ function Hud({ globalUserName, socket, playerColor, tableColor }) {
         <div className="hud--title">PLAYERS</div>
         <div className="hud--players">
           <div className="hud--player-name">
-            {playerColor == "white" && <img className={`hud--piece`} src={red} />}
-            {playerColor == "red" && <img className="hud--piece" src={white} />}
-            {tableFull && <span >{foeUserName}</span> || <span className="hud--waiting" >Waiting for other players...</span>}
+            {playerColor === "white" && <img alt='white' className={`hud--piece`} src={red} />}
+            {playerColor === "red" && <img alt='red' className="hud--piece" src={white} />}
+            {(tableFull && <span >{foeUserName}</span>) || <span className="hud--waiting" >Waiting for other players...</span>}
           </div>
           <div >
-            <div className={`hud--player-name`}>{playerColor == "red" && <img className="hud--piece" src={red} />}
-              {playerColor == "white" && <img className="hud--piece" src={white} />}{globalUserName}
+            <div alt='red' className={`hud--player-name`}>{playerColor === "red" && <img alt='red' className="hud--piece" src={red} />}
+              {playerColor === "white" && <img alt='white' className="hud--piece" src={white} />}{globalUserName}
             </div>
           </div>
         </div>

@@ -25,18 +25,18 @@ export function initBoard() {
     }
   };
   function setBoardColors(i, j) {
-    if (j % 2 == 0) {
+    if (j % 2 === 0) {
       tmp[i][j].cssStyle = "square-black";
       tmp[i][j].squareColor = "black";
     } else {
       tmp[i][j].cssStyle = "square-white";
       tmp[i][j].squareColor = "white";
     }
-    if (j % 2 == 0 && i % 2 == 0) {
+    if (j % 2 === 0 && i % 2 === 0) {
       tmp[i][j].cssStyle = "square-white";
       tmp[i][j].squareColor = "white";
     }
-    if (j % 2 != 0 && i % 2 == 0) {
+    if (j % 2 !== 0 && i % 2 === 0) {
       tmp[i][j].cssStyle = "square-black";
       tmp[i][j].squareColor = "black";
     }

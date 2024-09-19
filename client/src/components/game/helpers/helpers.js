@@ -42,20 +42,20 @@ function resetHighlightPossible(grid) {
 
 function kingPiece(grid) {
   for (let i = 0; i < 8; i++) {
-    if (grid[0][i].pieceType == "white") {
+    if (grid[0][i].pieceType === "white") {
       grid[0][i].pieceType = "whiteking"
     }
-    if (grid[7][i].pieceType == "red") {
+    if (grid[7][i].pieceType === "red") {
       grid[7][i].pieceType = "redking"
     }
   }
 }
 
 function highlight(square, type) {
-  if (type == 1) {
+  if (type === 1) {
     square.highlight = "-highlight";
   }
-  if (type == 2) {
+  if (type === 2) {
     square.highlight = "-highlight-possible";
   }
 }
@@ -73,23 +73,23 @@ function readFen(grid, fen) {
   let count = 0;
   for (let i = 0; i < 8; i++) {
     for (let j = 0; j < 8; j++) {
-      if (fen[count] == "1") {
+      if (fen[count] === "1") {
         grid[i][j].pieceType = "red";
         grid[i][j].pieceColor = "red";
       }
-      if (fen[count] == "2") {
+      if (fen[count] === "2") {
         grid[i][j].pieceType = "redking";
         grid[i][j].pieceColor = "red";
       }
-      if (fen[count] == "3") {
+      if (fen[count] === "3") {
         grid[i][j].pieceType = "white";
         grid[i][j].pieceColor = "white";
       }
-      if (fen[count] == "4") {
+      if (fen[count] === "4") {
         grid[i][j].pieceType = "whiteking";
         grid[i][j].pieceColor = "white";
       }
-      if (fen[count] == "0") {
+      if (fen[count] === "0") {
         grid[i][j].pieceType = null;
         grid[i][j].pieceColor = null;
       }
@@ -101,19 +101,19 @@ function writeFen(grid) {
   let tmp = "";
   for (let i = 0; i < 8; i++) {
     for (let j = 0; j < 8; j++) {
-      if (grid[i][j].pieceType == "red") {
+      if (grid[i][j].pieceType === "red") {
         tmp += "1";
       }
-      if (grid[i][j].pieceType == "redking") {
+      if (grid[i][j].pieceType === "redking") {
         tmp += "2";
       }
-      if (grid[i][j].pieceType == "white") {
+      if (grid[i][j].pieceType === "white") {
         tmp += "3";
       }
-      if (grid[i][j].pieceType == "whiteking") {
+      if (grid[i][j].pieceType === "whiteking") {
         tmp += "4";
       }
-      if (grid[i][j].pieceType == null) {
+      if (grid[i][j].pieceType === null) {
         tmp += "0";
       }
     }
@@ -124,10 +124,10 @@ function writeFen(grid) {
 function jumpUpLeftCondition(y, x, grid, playerColor) {
   if (
     x - 2 >= 0 && y - 2 >= 0
-    && grid[y - 1][x - 1].pieceColor != playerColor
-    && grid[y - 1][x - 1].pieceColor != grid[y][x].pieceColor
-    && grid[y - 1][x - 1].pieceColor != null
-    && grid[y - 2][x - 2].pieceColor == null
+    && grid[y - 1][x - 1].pieceColor !== playerColor
+    && grid[y - 1][x - 1].pieceColor !== grid[y][x].pieceColor
+    && grid[y - 1][x - 1].pieceColor !== null
+    && grid[y - 2][x - 2].pieceColor === null
   ) {
     console.log("UPLEFT CONDITIONAAAAAl", y, x)
     return true;
@@ -137,10 +137,10 @@ function jumpUpLeftCondition(y, x, grid, playerColor) {
 function jumpUpRightCondition(y, x, grid, playerColor) {
   if (
     x + 2 <= 7 && y - 2 >= 0
-    && grid[y - 1][x + 1].pieceColor != playerColor
-    && grid[y - 1][x + 1].pieceColor != grid[y][x].pieceColor
-    && grid[y - 1][x + 1].pieceColor != null
-    && grid[y - 2][x + 2].pieceColor == null
+    && grid[y - 1][x + 1].pieceColor !== playerColor
+    && grid[y - 1][x + 1].pieceColor !== grid[y][x].pieceColor
+    && grid[y - 1][x + 1].pieceColor !== null
+    && grid[y - 2][x + 2].pieceColor === null
   ) {
     console.log("uPRIGHTY CONDITIONAAAAAl", y, x, grid[y][x])
     return true;
@@ -150,10 +150,10 @@ function jumpUpRightCondition(y, x, grid, playerColor) {
 function jumpDownLeftCondition(y, x, grid, playerColor) {
   if (
     x - 2 >= 0 && y + 2 <= 7
-    && grid[y + 1][x - 1].pieceColor != playerColor
-    && grid[y + 1][x - 1].pieceColor != grid[y][x].pieceColor
-    && grid[y + 1][x - 1].pieceColor != null
-    && grid[y + 2][x - 2].pieceColor == null
+    && grid[y + 1][x - 1].pieceColor !== playerColor
+    && grid[y + 1][x - 1].pieceColor !== grid[y][x].pieceColor
+    && grid[y + 1][x - 1].pieceColor !== null
+    && grid[y + 2][x - 2].pieceColor === null
   ) {
     console.log("DOWNLEFT CONDITIONAAAAAl", y, x)
     return true;
@@ -163,10 +163,10 @@ function jumpDownLeftCondition(y, x, grid, playerColor) {
 function jumpDownRightCondition(y, x, grid, playerColor) {
   if (
     x + 2 <= 7 && y + 2 <= 7
-    && grid[y + 1][x + 1].pieceColor != playerColor
-    && grid[y + 1][x + 1].pieceColor != grid[y][x].pieceColor
-    && grid[y + 1][x + 1].pieceColor != null
-    && grid[y + 2][x + 2].pieceColor == null
+    && grid[y + 1][x + 1].pieceColor !== playerColor
+    && grid[y + 1][x + 1].pieceColor !== grid[y][x].pieceColor
+    && grid[y + 1][x + 1].pieceColor !== null
+    && grid[y + 2][x + 2].pieceColor === null
   ) {
     console.log("DOWNRIGHT CONDITIONAAAAAl", y, x)
     return true;
