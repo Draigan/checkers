@@ -43,5 +43,4 @@ node server.js
 ```
 6. Access the app:
 Open your browser and navigate to http://localhost:3000 for the client.
-The server is at http://localhost:8080.
 
