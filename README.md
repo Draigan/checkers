@@ -1,3 +1,7 @@
+  <p align="center">
+   <img style="max-width: 400px;" src="https://github.com/Draigan/checkers/blob/main/client/src/assets/checkers1.gif?raw=true" width="100%" />
+</p>
+
 # Online Checkers
 
 ## Highlights
