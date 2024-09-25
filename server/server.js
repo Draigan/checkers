@@ -3,7 +3,7 @@ const express = require('express');
 const http = require('http');
 const Server = require("socket.io").Server;
 const app = express();
-const PORT = 8080;
+const PORT = 1212;
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -17,10 +17,19 @@ server.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
 
-//Testing
 const startPosition = "0101010110101010010101010000000000000000303030300303030330303030";
 
-// const startPosition = "0101000010101010010001000030003000010303000000000300030030000030";
+//Testing
+// const startPosition = `
+// 00000000
+// 00000010
+// 00000000
+// 00001010
+// 00000000
+// 00101010
+// 03000000
+// 00000000
+// `.replace(/\n/g, '').replace(/\r/g, '');
 
 // Make some tables
 const tableOne = new Table("table_one", 1);
